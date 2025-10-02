@@ -32,6 +32,14 @@
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
         }
+        .error-message {
+            background-color: #fee2e2;
+            color: #ef4444;
+            border: 1px solid #fca5a5;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-weight: 600;
+        }
     </style>
 </head>
 <body class="text-gray-800">
@@ -48,6 +56,11 @@
 
     <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-16">
 
+        <!-- ALERTA DE CONFIGURAÇÃO CRÍTICO -->
+        <div id="config-alert" class="hidden my-6 p-4 rounded-lg error-message">
+            🚨 **ERRO DE CONFIGURAÇÃO:** O Firebase e a IA não estão conectados. Por favor, edite o código HTML e substitua os placeholders `SUA_CHAVE_FIREBASE_AQUI` e `SUA_CHAVE_GEMINI_API_AQUI` pelas suas chaves reais.
+        </div>
+        
         <!-- Área Principal do Dashboard -->
         <section class="grid lg:grid-cols-3 gap-8 mb-12">
 
@@ -187,36 +200,43 @@
         let auth;
         let userId;
 
-        // --- CONFIGURAÇÃO DE AMBIENTE (Canvas vs. GitHub Pages) ---
+        // ===================================================================================
+        // 🚨 PASSO 1: CONFIGURAÇÃO DE CHAVES (CRÍTICO PARA FUNCIONAMENTO FORA DESTE AMBIENTE)
+        // ===================================================================================
 
         // Variáveis fornecidas pelo ambiente Canvas (onde este código está rodando agora)
         const canvasAppId = typeof __app_id !== 'undefined' ? __app_id : null;
         const canvasFirebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : null;
         const canvasAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
 
-        // --- CONFIGURAÇÃO MANUAL PARA DEPLOY EXTERNO (GITHUB PAGES) ---
-        // SE VOCÊ FOR HOSPEDAR ISTO NO GITHUB PAGES:
-        // 1. CRIE UM PROJETO NO FIREBASE E SUBSTITUA O OBJETO ABAIXO.
-        // 2. SUBSTITUA 'SUA_CHAVE_API_FIREBASE_AQUI' PELA SUA CHAVE REAL.
-        const GH_PAGES_FIREBASE_CONFIG = {
-            apiKey: "SUA_CHAVE_API_FIREBASE_AQUI", 
-            authDomain: "seu-projeto-exemplo.firebaseapp.com",
-            projectId: "seu-projeto-exemplo",
-            storageBucket: "seu-projeto-exemplo.appspot.com",
-            messagingSenderId: "1234567890",
-            appId: "1:234567890:web:abcdefg"
+        // --- 🔒 CONFIGURAÇÃO MANUAL PARA DEPLOY EXTERNO (GITHUB PAGES) ---
+        // SE VOCÊ FOR HOSPEDAR ISTO NO GITHUB PAGES, SUBSTITUA AS CHAVES ABAIXO:
+        const GH_PAGES_CONFIG = {
+            // Chaves do seu Projeto Firebase
+            firebase: {
+                apiKey: "SUA_CHAVE_FIREBASE_AQUI", // <-- OBRIGATÓRIO!
+                authDomain: "SEU_AUTH_DOMAIN_AQUI",
+                projectId: "SEU_PROJECT_ID_AQUI",
+                storageBucket: "SEU_STORAGE_BUCKET_AQUI",
+                messagingSenderId: "SEU_MESSAGING_SENDER_ID_AQUI",
+                appId: "SEU_APP_ID_AQUI"
+            },
+            // Chave do seu Gemini API
+            geminiApiKey: "SUA_CHAVE_GEMINI_API_AQUI", // <-- OBRIGATÓRIO PARA O ASSISTENTE IA!
+            // ID fixo para o caminho do Firestore (se não for o Canvas)
+            appId: 'app-de-orcamento-pessoal' 
         };
-        const GH_PAGES_APP_ID = 'app-de-orcamento-pessoal'; // ID fixo para o caminho do Firestore
-
+        
         // Determina qual configuração usar
-        const appId = canvasAppId || GH_PAGES_APP_ID;
-        const firebaseConfig = canvasFirebaseConfig || GH_PAGES_FIREBASE_CONFIG;
+        const appId = canvasAppId || GH_PAGES_CONFIG.appId;
+        const firebaseConfig = canvasFirebaseConfig || GH_PAGES_CONFIG.firebase;
+        const geminiApiKey = canvasAppId ? "" : GH_PAGES_CONFIG.geminiApiKey; // Usa chave vazia se estiver no Canvas
         const initialAuthToken = canvasAuthToken; 
         
         // FIM DA CONFIGURAÇÃO MANUAL
+        // ===================================================================================
 
         // Referências Firestore
-        const PUBLIC_PATH = (collectionName) => `artifacts/${appId}/public/data/${collectionName}`;
         const PRIVATE_PATH = (collectionName) => `artifacts/${appId}/users/${userId}/${collectionName}`;
 
         // Estado Global
@@ -226,18 +246,21 @@
 
         // --- 1. Inicialização e Autenticação ---
         async function initFirebaseAndAuth() {
-            if (!firebaseConfig || firebaseConfig.apiKey === "SUA_CHAVE_API_FIREBASE_AQUI") {
-                console.error("Firebase config não encontrada ou usando placeholder.");
-                document.getElementById('auth-status').textContent = "⚠️ Use suas chaves do Firebase para salvar dados.";
-                // Permitir que o app inicie, mas com funcionalidades de salvamento limitadas/quebradas.
-                isAuthReady = true; 
+            // Verifica se a chave do Firebase é o placeholder
+            const isPlaceholder = !firebaseConfig.apiKey || firebaseConfig.apiKey.includes("FIREBASE_AQUI");
+            
+            if (!canvasAppId && isPlaceholder) {
+                console.error("Firebase config não encontrada ou usando placeholder. O salvamento de dados foi desativado.");
+                document.getElementById('auth-status').textContent = "❌ ERRO: Chaves do Firebase ausentes.";
+                document.getElementById('config-alert').classList.remove('hidden');
+                isAuthReady = true; // Permite que a UI carregue, mas o DB será nulo.
                 return;
             }
 
             const app = initializeApp(firebaseConfig);
             db = getFirestore(app);
             auth = getAuth(app);
-
+            
             // Tenta manter a persistência da autenticação
             await setPersistence(auth, browserLocalPersistence);
 
@@ -260,12 +283,15 @@
                         return;
                     }
                     userId = auth.currentUser?.uid || crypto.randomUUID();
+                    document.getElementById('auth-status').textContent = `Usuário (ID): ${userId}`;
                 }
 
                 // Uma vez autenticado e com userId, podemos carregar os dados
                 isAuthReady = true;
-                if (userId) {
+                if (userId && db) {
                     loadDataListeners();
+                } else if (!db) {
+                    console.warn("DB não está pronto. Funcionalidades de salvamento desativadas.");
                 } else {
                     console.error("Não foi possível obter um User ID.");
                 }
@@ -275,7 +301,7 @@
         // --- 2. Carregar Dados em Tempo Real (Listeners) ---
         function loadDataListeners() {
             if (!isAuthReady || !db || !userId) {
-                console.warn("Firebase ou Auth não estão prontos.");
+                console.warn("Firebase ou Auth não estão prontos para listeners.");
                 return;
             }
 
@@ -289,28 +315,33 @@
                     updateDashboard(transactionsData, currentIncome); // Passa transações atuais
                     document.getElementById('income-status').textContent = `Renda salva: ${formatCurrency(currentIncome)}`;
                 } else {
-                    console.log("Perfil não encontrado, usando renda padrão.");
-                    if(db) saveIncome(); // Salva a renda inicial se o DB estiver pronto
+                    console.log("Perfil não encontrado, usando renda padrão. Tentando salvar a inicial.");
+                    // Se o documento não existe, salva a renda inicial para criá-lo
+                    if(db) saveIncome(true); 
                 }
             }, (error) => console.error("Erro ao carregar perfil:", error));
 
 
             // Listener para Transações (Coleção)
-            const transactionsQuery = query(collection(db, PRIVATE_PATH('transactions')), orderBy("date", "desc"));
+            const transactionsQuery = query(collection(db, PRIVATE_PATH('transactions')));
             onSnapshot(transactionsQuery, (snapshot) => {
                 const transactions = [];
                 snapshot.forEach(doc => {
                     transactions.push({ id: doc.id, ...doc.data() });
                 });
+                // Ordena em memória por data (mais recente primeiro)
+                transactions.sort((a, b) => new Date(b.date) - new Date(a.date));
                 renderData(transactions); // Chama renderData para atualizar lista e dashboard
             }, (error) => console.error("Erro ao carregar transações:", error));
         }
 
 
         // --- 3. Salvar Renda Mensal ---
-        window.saveIncome = async function() {
+        window.saveIncome = async function(silent = false) {
             if (!isAuthReady || !db || !userId) {
-                alertUser("⚠️ Aguardando inicialização do Firebase para salvar a renda. Verifique as configurações.", "bg-yellow-100 text-yellow-700");
+                if (!silent) {
+                    alertUser("⚠️ Aguardando inicialização do Firebase para salvar. Verifique as configurações.", "bg-yellow-100 text-yellow-700");
+                }
                 return;
             }
 
@@ -326,7 +357,9 @@
             try {
                 const profileRef = doc(db, PRIVATE_PATH('financial_data'), 'user_profile');
                 await setDoc(profileRef, { monthlyIncome: incomeValue }, { merge: true });
-                alertUser("✅ Renda mensal atualizada com sucesso!", "bg-green-100 text-green-700");
+                if (!silent) {
+                    alertUser("✅ Renda mensal atualizada com sucesso!", "bg-green-100 text-green-700");
+                }
             } catch (error) {
                 console.error("Erro ao salvar a renda:", error);
                 alertUser("❌ Erro ao salvar a renda. (Verifique suas Regras de Segurança do Firestore)", "bg-red-100 text-red-700");
@@ -482,7 +515,7 @@
         }
 
 
-        /** Função para chamar o Assistente Virtual (Gemini API) */
+        // --- 6. Função para chamar o Assistente Virtual (Gemini API) ---
         window.askAssistant = async function() {
             if (!isAuthReady) {
                 alertUser("⚠️ Aguarde a autenticação antes de usar o Assistente.", "bg-yellow-100 text-yellow-700");
@@ -492,6 +525,15 @@
             const queryEl = document.getElementById('assistant-query');
             const responseEl = document.getElementById('assistant-response');
             const query = queryEl.value.trim();
+
+            // Verifica a chave do Gemini
+            const finalGeminiKey = geminiApiKey.includes("GEMINI_API_AQUI") ? null : geminiApiKey;
+
+            if (!finalGeminiKey) {
+                document.getElementById('config-alert').classList.remove('hidden');
+                alertUser("🚨 A CHAVE GEMINI API ESTÁ AUSENTE ou é PLACEHOLDER! O Assistente IA não pode funcionar.", "bg-red-100 text-red-700");
+                return;
+            }
 
             if (query === "") {
                 alertUser("⚠️ Por favor, digite sua pergunta.", "bg-yellow-100 text-yellow-700");
@@ -527,17 +569,14 @@
                 Renda Mensal: ${contextData.rendaMensal}
                 Total Gasto neste ciclo: ${contextData.totalGastos}
                 Saldo Restante: ${contextData.saldoRestante}
-                Últimas Transações (10 mais recentes, [Data] Valor - Descrição):
+                Últimas Transações (10 mais recentes, [Data] Valor - Descrição, Emoção):
                 ${contextData.historicoTransacoes.join('\n')}
                 --- FIM DO CONTEXTO ---
             `;
 
             const userQuery = `Baseado no meu contexto, responda a seguinte pergunta de forma útil e encorajadora: "${query}"`;
             
-            // CHAVE DA API GEMINI: No ambiente Canvas, o valor é injetado. 
-            // Para GitHub Pages, você deve substituir a string vazia pela sua chave de API do Gemini!
-            const apiKey = ""; 
-            // ATENÇÃO: Chaves de API hardcoded em front-end são visíveis publicamente!
+            const apiKey = finalGeminiKey || ""; // Usa a chave real ou vazia se estiver no Canvas
             
             const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
 
@@ -571,7 +610,7 @@
                     }
                 } catch (error) {
                     console.error("Erro na chamada da API:", error);
-                    responseText = "Erro de rede ou na API. Verifique sua conexão ou tente novamente. (Se estiver no GitHub Pages, verifique sua Gemini API Key!)";
+                    responseText = "Erro de rede ou na API. Verifique sua conexão ou tente novamente.";
                     if (i === MAX_RETRIES - 1) break; // Última tentativa falhou
                 }
             }
