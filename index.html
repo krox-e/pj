@@ -186,9 +186,34 @@
         let db;
         let auth;
         let userId;
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
-        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : null;
-        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+
+        // --- CONFIGURAÇÃO DE AMBIENTE (Canvas vs. GitHub Pages) ---
+
+        // Variáveis fornecidas pelo ambiente Canvas (onde este código está rodando agora)
+        const canvasAppId = typeof __app_id !== 'undefined' ? __app_id : null;
+        const canvasFirebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : null;
+        const canvasAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+
+        // --- CONFIGURAÇÃO MANUAL PARA DEPLOY EXTERNO (GITHUB PAGES) ---
+        // SE VOCÊ FOR HOSPEDAR ISTO NO GITHUB PAGES:
+        // 1. CRIE UM PROJETO NO FIREBASE E SUBSTITUA O OBJETO ABAIXO.
+        // 2. SUBSTITUA 'SUA_CHAVE_API_FIREBASE_AQUI' PELA SUA CHAVE REAL.
+        const GH_PAGES_FIREBASE_CONFIG = {
+            apiKey: "SUA_CHAVE_API_FIREBASE_AQUI", 
+            authDomain: "seu-projeto-exemplo.firebaseapp.com",
+            projectId: "seu-projeto-exemplo",
+            storageBucket: "seu-projeto-exemplo.appspot.com",
+            messagingSenderId: "1234567890",
+            appId: "1:234567890:web:abcdefg"
+        };
+        const GH_PAGES_APP_ID = 'app-de-orcamento-pessoal'; // ID fixo para o caminho do Firestore
+
+        // Determina qual configuração usar
+        const appId = canvasAppId || GH_PAGES_APP_ID;
+        const firebaseConfig = canvasFirebaseConfig || GH_PAGES_FIREBASE_CONFIG;
+        const initialAuthToken = canvasAuthToken; 
+        
+        // FIM DA CONFIGURAÇÃO MANUAL
 
         // Referências Firestore
         const PUBLIC_PATH = (collectionName) => `artifacts/${appId}/public/data/${collectionName}`;
@@ -197,13 +222,15 @@
         // Estado Global
         let currentIncome = 0;
         let isAuthReady = false;
-        let transactionsData = []; // NOVO: Armazena o histórico de transações para o Assistente
+        let transactionsData = []; // Armazena o histórico de transações para o Assistente
 
         // --- 1. Inicialização e Autenticação ---
         async function initFirebaseAndAuth() {
-            if (!firebaseConfig) {
-                console.error("Firebase config not found.");
-                document.getElementById('auth-status').textContent = "Erro: Configuração Firebase ausente.";
+            if (!firebaseConfig || firebaseConfig.apiKey === "SUA_CHAVE_API_FIREBASE_AQUI") {
+                console.error("Firebase config não encontrada ou usando placeholder.");
+                document.getElementById('auth-status').textContent = "⚠️ Use suas chaves do Firebase para salvar dados.";
+                // Permitir que o app inicie, mas com funcionalidades de salvamento limitadas/quebradas.
+                isAuthReady = true; 
                 return;
             }
 
@@ -219,11 +246,12 @@
                     userId = user.uid;
                     document.getElementById('auth-status').textContent = `Usuário (ID): ${userId}`;
                 } else {
-                    // Se não houver token inicial, loga anonimamente
                     try {
+                        // Se tiver token do Canvas, usa-o.
                         if (initialAuthToken) {
                             await signInWithCustomToken(auth, initialAuthToken);
                         } else {
+                            // Se não tiver token (caso de GitHub Pages), loga anonimamente
                             await signInAnonymously(auth);
                         }
                     } catch (error) {
@@ -262,7 +290,7 @@
                     document.getElementById('income-status').textContent = `Renda salva: ${formatCurrency(currentIncome)}`;
                 } else {
                     console.log("Perfil não encontrado, usando renda padrão.");
-                    saveIncome(); // Salva a renda inicial
+                    if(db) saveIncome(); // Salva a renda inicial se o DB estiver pronto
                 }
             }, (error) => console.error("Erro ao carregar perfil:", error));
 
@@ -282,7 +310,7 @@
         // --- 3. Salvar Renda Mensal ---
         window.saveIncome = async function() {
             if (!isAuthReady || !db || !userId) {
-                console.warn("Aguardando inicialização do Firebase para salvar a renda.");
+                alertUser("⚠️ Aguardando inicialização do Firebase para salvar a renda. Verifique as configurações.", "bg-yellow-100 text-yellow-700");
                 return;
             }
 
@@ -301,7 +329,7 @@
                 alertUser("✅ Renda mensal atualizada com sucesso!", "bg-green-100 text-green-700");
             } catch (error) {
                 console.error("Erro ao salvar a renda:", error);
-                alertUser("❌ Erro ao salvar a renda.", "bg-red-100 text-red-700");
+                alertUser("❌ Erro ao salvar a renda. (Verifique suas Regras de Segurança do Firestore)", "bg-red-100 text-red-700");
             }
         }
 
@@ -310,7 +338,7 @@
         document.getElementById('expense-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             if (!isAuthReady || !db || !userId) {
-                alertUser("⚠️ Sistema não está pronto. Tente novamente em instantes.", "bg-yellow-100 text-yellow-700");
+                alertUser("⚠️ Sistema não está pronto para salvar dados. Verifique as configurações do Firebase.", "bg-yellow-100 text-yellow-700");
                 return;
             }
 
@@ -342,7 +370,7 @@
                 
             } catch (error) {
                 console.error("Erro ao adicionar transação:", error);
-                alertUser("❌ Erro ao salvar a transação.", "bg-red-100 text-red-700");
+                alertUser("❌ Erro ao salvar a transação. (Verifique suas Regras de Segurança do Firestore)", "bg-red-100 text-red-700");
             }
         });
 
@@ -506,7 +534,11 @@
 
             const userQuery = `Baseado no meu contexto, responda a seguinte pergunta de forma útil e encorajadora: "${query}"`;
             
+            // CHAVE DA API GEMINI: No ambiente Canvas, o valor é injetado. 
+            // Para GitHub Pages, você deve substituir a string vazia pela sua chave de API do Gemini!
             const apiKey = ""; 
+            // ATENÇÃO: Chaves de API hardcoded em front-end são visíveis publicamente!
+            
             const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
 
             const payload = {
@@ -539,7 +571,7 @@
                     }
                 } catch (error) {
                     console.error("Erro na chamada da API:", error);
-                    responseText = "Erro de rede ou na API. Verifique sua conexão ou tente novamente.";
+                    responseText = "Erro de rede ou na API. Verifique sua conexão ou tente novamente. (Se estiver no GitHub Pages, verifique sua Gemini API Key!)";
                     if (i === MAX_RETRIES - 1) break; // Última tentativa falhou
                 }
             }
