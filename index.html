@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Orçamento Simples: Consciência Financeira</title>
+    <!-- Carrega Tailwind CSS para estilização rápida e responsiva -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Configuração de cor e fonte -->
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f4f8; /* Fundo mais claro */
+        }
+        .text-gradient {
+            background-image: linear-gradient(to right, #10b981, #059669); /* Verde menta/esmeralda */
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .card-shadow {
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            transition: transform 0.3s ease-in-out;
+        }
+        .card-shadow:hover {
+            transform: translateY(-2px);
+        }
+        .animated-entry {
+            animation: fadeIn 0.5s ease-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body class="text-gray-800">
+
+    <!-- Cabeçalho e Navegação -->
+    <header class="bg-white shadow-lg sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
+            <h1 class="text-3xl font-extrabold text-gradient">Orçamento Simples</h1>
+            <div id="auth-status" class="text-sm text-gray-500 truncate max-w-[150px] sm:max-w-full" title="Seu ID de Usuário (Necessário para salvar dados)">
+                Aguardando autenticação...
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-16">
+
+        <!-- Área Principal do Dashboard -->
+        <section class="grid lg:grid-cols-3 gap-8 mb-12">
+
+            <!-- Coluna 1: Entrada de Dados (Renda e Despesa) -->
+            <div class="lg:col-span-1 space-y-8">
+                
+                <!-- Card de Renda Mensal -->
+                <div class="bg-white p-6 rounded-xl shadow-xl border-t-4 border-green-500">
+                    <h2 class="text-2xl font-bold mb-4 text-green-700">1. Sua Renda Mensal</h2>
+                    <label for="monthly-income" class="block text-sm font-medium text-gray-700 mb-2">Quanto você ganha por mês? (R$)</label>
+                    <div class="flex space-x-2">
+                        <input type="number" id="monthly-income" value="4000" class="flex-grow rounded-md border-gray-300 shadow-sm p-3 border focus:border-green-500 focus:ring-green-500" placeholder="4000.00">
+                        <button onclick="saveIncome()" id="btn-save-income" class="bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-4 rounded-lg transition duration-200 shadow-md">
+                            Salvar
+                        </button>
+                    </div>
+                    <p id="income-status" class="mt-2 text-sm text-gray-500">Renda salva: R$ 0,00</p>
+                </div>
+
+                <!-- Card de Novo Gasto -->
+                <div class="bg-white p-6 rounded-xl shadow-xl border-t-4 border-red-500">
+                    <h2 class="text-2xl font-bold mb-4 text-red-700">2. Registrar Novo Gasto</h2>
+                    
+                    <form id="expense-form" class="space-y-4">
+                        
+                        <div>
+                            <label for="expense-amount" class="block text-sm font-medium text-gray-700">Valor Gasto (R$)</label>
+                            <input type="number" id="expense-amount" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-3 border focus:border-red-500 focus:ring-red-500" placeholder="50.00">
+                        </div>
+
+                        <div>
+                            <label for="expense-description" class="block text-sm font-medium text-gray-700">O que você comprou?</label>
+                            <input type="text" id="expense-description" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-3 border focus:border-red-500 focus:ring-red-500" placeholder="Pizza e refrigerante">
+                        </div>
+
+                        <div>
+                            <label for="expense-necessity" class="block text-sm font-medium text-gray-700">Nível de Necessidade</label>
+                            <select id="expense-necessity" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-3 border focus:border-red-500 focus:ring-red-500">
+                                <option value="Alto">Essencial (Aluguel, Contas)</option>
+                                <option value="Medio">Importante (Manutenção, Saúde)</option>
+                                <option value="Baixo" selected>Desnecessário (Impulso, Lazer)</option>
+                            </select>
+                        </div>
+                        
+                        <div>
+                            <label for="expense-emotion" class="block text-sm font-medium text-gray-700">Como você se sentiu gastando?</label>
+                            <select id="expense-emotion" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-3 border focus:border-red-500 focus:ring-red-500">
+                                <option value="Felicidade">Feliz / Satisfeito</option>
+                                <option value="Tristeza">Triste / Chateado</option>
+                                <option value="Ansiedade">Ansioso / Impulsivo</option>
+                                <option value="Apatia">Neutro / Indiferente</option>
+                                <option value="Culpa">Culpado / Arrependido</option>
+                            </select>
+                        </div>
+
+                        <button type="submit" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 rounded-lg transition duration-200 shadow-md">
+                            Registrar Gasto
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Coluna 2 e 3: Resumo, Coaching e Assistente -->
+            <div class="lg:col-span-2 space-y-8">
+                
+                <!-- Card de Resumo Financeiro (Dashboard) -->
+                <div class="bg-white p-6 rounded-xl shadow-xl border-t-4 border-blue-500">
+                    <h2 class="text-2xl font-bold mb-4 text-blue-700">3. Seu Resumo Financeiro</h2>
+                    <div class="grid grid-cols-3 gap-4 text-center">
+                        <div class="bg-green-100 p-4 rounded-lg">
+                            <p class="text-sm text-green-700 font-medium">Renda Mensal</p>
+                            <p id="display-income" class="text-2xl font-extrabold text-green-800">R$ 0,00</p>
+                        </div>
+                        <div class="bg-red-100 p-4 rounded-lg">
+                            <p class="text-sm text-red-700 font-medium">Total Gasto</p>
+                            <p id="display-spent" class="text-2xl font-extrabold text-red-800">R$ 0,00</p>
+                        </div>
+                        <div id="balance-card" class="bg-blue-100 p-4 rounded-lg">
+                            <p class="text-sm text-blue-700 font-medium">Saldo Restante</p>
+                            <p id="display-balance" class="text-2xl font-extrabold text-blue-800">R$ 0,00</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card de Feedback e Coaching (Resultado do último gasto) -->
+                <div id="coaching-area" class="bg-yellow-100 p-6 rounded-xl shadow-2xl border-t-4 border-yellow-500 hidden animated-entry">
+                    <h2 class="text-2xl font-bold mb-4 text-yellow-800 flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-lightbulb text-yellow-600 mr-2"><path d="M15 14c.2-.8.2-2.7-.6-4.2a6 6 0 0 0-6 0c-.8 1.5-.8 3.4-.6 4.2"/><path d="M11 17h2"/><path d="M12 22a4 4 0 0 0 4-4H8a4 4 0 0 0 4 4"/><path d="M12 10V2"/></svg>
+                        Análise de Gasto & Coaching
+                    </h2>
+                    <div id="coaching-message" class="text-gray-700 space-y-3">
+                        <!-- Mensagem de feedback será inserida aqui -->
+                    </div>
+                </div>
+                
+                <!-- Card do Assistente Virtual (NOVO) -->
+                <div class="bg-white p-6 rounded-xl shadow-xl border-t-4 border-teal-500">
+                    <h2 class="text-2xl font-bold mb-4 text-teal-700">4. Assistente de Economia (IA)</h2>
+                    
+                    <div class="space-y-4">
+                        <div id="assistant-response" class="min-h-[100px] p-3 bg-gray-50 rounded-lg border border-gray-200 text-gray-700">
+                            Olá! Sou seu assistente de finanças. Pergunte-me como economizar, sobre seus hábitos de gasto ou como planejar uma meta!
+                        </div>
+                        
+                        <div class="flex space-x-2">
+                            <input type="text" id="assistant-query" class="flex-grow rounded-md border-gray-300 shadow-sm p-3 border focus:border-teal-500 focus:ring-teal-500" placeholder="Ex: 'Quais os 3 maiores vilões dos meus gastos?'">
+                            <button onclick="askAssistant()" id="btn-ask-assistant" class="bg-teal-600 hover:bg-teal-700 text-white font-semibold py-3 px-4 rounded-lg transition duration-200 shadow-md">
+                                Perguntar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Lista de Transações -->
+                <div class="bg-white p-6 rounded-xl shadow-xl">
+                    <h2 class="text-xl font-bold mb-4 text-gray-700">Histórico de Transações</h2>
+                    <ul id="transactions-list" class="space-y-3">
+                        <li class="text-gray-500">Nenhuma transação registrada ainda.</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Importações Firebase -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged, setPersistence, browserLocalPersistence } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, setDoc, onSnapshot, collection, query, orderBy, addDoc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        
+        // Ativar logs de debug para Firestore
+        setLogLevel('Debug');
+
+        let db;
+        let auth;
+        let userId;
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : null;
+        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+
+        // Referências Firestore
+        const PUBLIC_PATH = (collectionName) => `artifacts/${appId}/public/data/${collectionName}`;
+        const PRIVATE_PATH = (collectionName) => `artifacts/${appId}/users/${userId}/${collectionName}`;
+
+        // Estado Global
+        let currentIncome = 0;
+        let isAuthReady = false;
+        let transactionsData = []; // NOVO: Armazena o histórico de transações para o Assistente
+
+        // --- 1. Inicialização e Autenticação ---
+        async function initFirebaseAndAuth() {
+            if (!firebaseConfig) {
+                console.error("Firebase config not found.");
+                document.getElementById('auth-status').textContent = "Erro: Configuração Firebase ausente.";
+                return;
+            }
+
+            const app = initializeApp(firebaseConfig);
+            db = getFirestore(app);
+            auth = getAuth(app);
+
+            // Tenta manter a persistência da autenticação
+            await setPersistence(auth, browserLocalPersistence);
+
+            onAuthStateChanged(auth, async (user) => {
+                if (user) {
+                    userId = user.uid;
+                    document.getElementById('auth-status').textContent = `Usuário (ID): ${userId}`;
+                } else {
+                    // Se não houver token inicial, loga anonimamente
+                    try {
+                        if (initialAuthToken) {
+                            await signInWithCustomToken(auth, initialAuthToken);
+                        } else {
+                            await signInAnonymously(auth);
+                        }
+                    } catch (error) {
+                        console.error("Erro ao autenticar:", error);
+                        document.getElementById('auth-status').textContent = "Erro de autenticação.";
+                        return;
+                    }
+                    userId = auth.currentUser?.uid || crypto.randomUUID();
+                }
+
+                // Uma vez autenticado e com userId, podemos carregar os dados
+                isAuthReady = true;
+                if (userId) {
+                    loadDataListeners();
+                } else {
+                    console.error("Não foi possível obter um User ID.");
+                }
+            });
+        }
+
+        // --- 2. Carregar Dados em Tempo Real (Listeners) ---
+        function loadDataListeners() {
+            if (!isAuthReady || !db || !userId) {
+                console.warn("Firebase ou Auth não estão prontos.");
+                return;
+            }
+
+            // Listener para Renda Mensal (Documento único)
+            const profileRef = doc(db, PRIVATE_PATH('financial_data'), 'user_profile');
+            onSnapshot(profileRef, (docSnap) => {
+                if (docSnap.exists()) {
+                    const data = docSnap.data();
+                    currentIncome = data.monthlyIncome || 0;
+                    document.getElementById('monthly-income').value = currentIncome;
+                    updateDashboard(transactionsData, currentIncome); // Passa transações atuais
+                    document.getElementById('income-status').textContent = `Renda salva: ${formatCurrency(currentIncome)}`;
+                } else {
+                    console.log("Perfil não encontrado, usando renda padrão.");
+                    saveIncome(); // Salva a renda inicial
+                }
+            }, (error) => console.error("Erro ao carregar perfil:", error));
+
+
+            // Listener para Transações (Coleção)
+            const transactionsQuery = query(collection(db, PRIVATE_PATH('transactions')), orderBy("date", "desc"));
+            onSnapshot(transactionsQuery, (snapshot) => {
+                const transactions = [];
+                snapshot.forEach(doc => {
+                    transactions.push({ id: doc.id, ...doc.data() });
+                });
+                renderData(transactions); // Chama renderData para atualizar lista e dashboard
+            }, (error) => console.error("Erro ao carregar transações:", error));
+        }
+
+
+        // --- 3. Salvar Renda Mensal ---
+        window.saveIncome = async function() {
+            if (!isAuthReady || !db || !userId) {
+                console.warn("Aguardando inicialização do Firebase para salvar a renda.");
+                return;
+            }
+
+            const incomeValue = parseFloat(document.getElementById('monthly-income').value);
+
+            if (isNaN(incomeValue) || incomeValue < 0) {
+                alertUser("⚠️ Por favor, insira um valor de renda mensal válido.", "bg-red-100 text-red-700");
+                return;
+            }
+            
+            currentIncome = incomeValue;
+            
+            try {
+                const profileRef = doc(db, PRIVATE_PATH('financial_data'), 'user_profile');
+                await setDoc(profileRef, { monthlyIncome: incomeValue }, { merge: true });
+                alertUser("✅ Renda mensal atualizada com sucesso!", "bg-green-100 text-green-700");
+            } catch (error) {
+                console.error("Erro ao salvar a renda:", error);
+                alertUser("❌ Erro ao salvar a renda.", "bg-red-100 text-red-700");
+            }
+        }
+
+
+        // --- 4. Adicionar Nova Transação ---
+        document.getElementById('expense-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            if (!isAuthReady || !db || !userId) {
+                alertUser("⚠️ Sistema não está pronto. Tente novamente em instantes.", "bg-yellow-100 text-yellow-700");
+                return;
+            }
+
+            const amount = parseFloat(document.getElementById('expense-amount').value);
+            const description = document.getElementById('expense-description').value.trim();
+            const necessity = document.getElementById('expense-necessity').value;
+            const emotion = document.getElementById('expense-emotion').value;
+
+            if (isNaN(amount) || amount <= 0 || description === "") {
+                alertUser("⚠️ Preencha todos os campos corretamente (Valor > 0).", "bg-red-100 text-red-700");
+                return;
+            }
+            
+            const newTransaction = {
+                date: new Date().toISOString(),
+                amount: amount,
+                description: description,
+                necessity: necessity,
+                emotion: emotion
+            };
+            
+            try {
+                const transactionsRef = collection(db, PRIVATE_PATH('transactions'));
+                await addDoc(transactionsRef, newTransaction);
+                
+                // Limpa o formulário e exibe o coaching
+                document.getElementById('expense-form').reset();
+                generateCoaching(newTransaction);
+                
+            } catch (error) {
+                console.error("Erro ao adicionar transação:", error);
+                alertUser("❌ Erro ao salvar a transação.", "bg-red-100 text-red-700");
+            }
+        });
+
+
+        // --- 5. Funções de Exibição e Utilitários ---
+        
+        /** Atualiza os displays do dashboard */
+        function updateDashboard(transactions, income = currentIncome) {
+            let totalSpent = 0;
+            if (transactions) {
+                totalSpent = transactions.reduce((sum, t) => sum + t.amount, 0);
+            }
+
+            const balance = income - totalSpent;
+
+            document.getElementById('display-income').textContent = formatCurrency(income);
+            document.getElementById('display-spent').textContent = formatCurrency(totalSpent);
+            document.getElementById('display-balance').textContent = formatCurrency(balance);
+
+            // Atualiza a cor de fundo do Saldo Restante
+            const balanceCard = document.getElementById('balance-card');
+            balanceCard.classList.remove('bg-green-100', 'bg-red-100', 'bg-blue-100', 'bg-yellow-100');
+            document.getElementById('display-balance').classList.remove('text-green-800', 'text-red-800', 'text-blue-800', 'text-yellow-800');
+            
+            if (balance >= income * 0.2) { // Acima de 20%
+                balanceCard.classList.add('bg-green-100');
+                document.getElementById('display-balance').classList.add('text-green-800');
+            } else if (balance >= 0) {
+                balanceCard.classList.add('bg-yellow-100');
+                document.getElementById('display-balance').classList.add('text-yellow-800');
+            } else { // Negativo
+                balanceCard.classList.add('bg-red-100');
+                document.getElementById('display-balance').classList.add('text-red-800');
+            }
+            document.getElementById('display-balance').parentElement.classList.remove('text-blue-700'); // Remove cor inicial
+        }
+
+        /** Renderiza a lista de transações e atualiza o dashboard */
+        function renderData(transactions) {
+            transactionsData = transactions; // Guarda os dados globalmente
+            updateDashboard(transactions);
+            const listEl = document.getElementById('transactions-list');
+            listEl.innerHTML = ''; // Limpa a lista
+
+            if (transactions.length === 0) {
+                 listEl.innerHTML = '<li class="text-gray-500 p-2 text-center">Nenhuma transação registrada. Comece agora!</li>';
+                 return;
+            }
+
+            transactions.forEach(t => {
+                const date = new Date(t.date).toLocaleDateString('pt-BR');
+                const li = document.createElement('li');
+                li.className = 'flex justify-between items-center p-3 bg-gray-50 rounded-lg border-l-4 border-red-400 animated-entry';
+                li.innerHTML = `
+                    <div>
+                        <p class="font-semibold">${t.description} - <span class="text-red-600">${formatCurrency(t.amount)}</span></p>
+                        <p class="text-xs text-gray-500">
+                            ${date} | Necessidade: ${t.necessity} | Emoção: ${t.emotion}
+                        </p>
+                    </div>
+                `;
+                listEl.appendChild(li);
+            });
+        }
+
+        /** Gera a mensagem de coaching personalizada */
+        function generateCoaching(transaction) {
+            const { description, amount, necessity, emotion } = transaction;
+            let title = '';
+            let message = '';
+            let style = '';
+
+            const expenseFormatted = formatCurrency(amount);
+
+            if (necessity === 'Baixo' && (emotion === 'Ansiedade' || emotion === 'Culpa')) {
+                // Gasto desnecessário por impulso/culpa (o pior cenário)
+                title = "🚨 Gasto de Impulso Detectado! 🚨";
+                message = `O gasto de **${expenseFormatted}** em "${description}" não era essencial e foi motivado por **${emotion}**. Isso é um sinal! Sempre que sentir essa emoção, tente esperar 24 horas antes de comprar. Sua carteira e sua mente agradecem.`;
+                style = 'bg-red-100 text-red-800 border-red-500';
+            } else if (necessity === 'Baixo' && emotion === 'Felicidade') {
+                // Gasto desnecessário, mas que trouxe satisfação (Lazer planejado)
+                title = "✨ Satisfação Pessoal é Investimento! ✨";
+                message = `O gasto de **${expenseFormatted}** em "${description}" trouxe **Felicidade**! Se isso foi um gasto de lazer planejado e dentro da sua meta, parabéns! Lembre-se, o objetivo é gastar conscientemente, mesmo com o que é 'desnecessário' para sobreviver.`;
+                style = 'bg-green-100 text-green-800 border-green-500';
+            } else if (necessity === 'Alto' && (emotion === 'Tristeza' || emotion === 'Apatia')) {
+                // Gasto essencial, mas que é pesado (Contas)
+                title = "💙 Cuidado com o Básico 💙";
+                message = `O gasto essencial de **${expenseFormatted}** em "${description}" gerou **${emotion}**. Contas essenciais podem pesar, mas garantir o básico é o primeiro passo para a liberdade financeira. Podemos tentar renegociar ou buscar alternativas mais baratas no próximo mês?`;
+                style = 'bg-blue-100 text-blue-800 border-blue-500';
+            } else {
+                // Cenário neutro ou não crítico
+                title = "💡 Registro Concluído com Sucesso! 💡";
+                message = `Você registrou **${expenseFormatted}** em "${description}". O simples ato de registrar já aumenta sua consciência. Pense: foi estritamente necessário (${necessity})? Você se sentiu bem (${emotion})? Continue monitorando!`;
+                style = 'bg-yellow-100 text-yellow-800 border-yellow-500';
+            }
+
+            // Exibir a mensagem no painel de coaching
+            const coachingArea = document.getElementById('coaching-area');
+            coachingArea.classList.remove('hidden', 'bg-red-100', 'bg-green-100', 'bg-blue-100', 'bg-yellow-100');
+            coachingArea.classList.add(style);
+            
+            document.getElementById('coaching-message').innerHTML = `
+                <h4 class="font-bold text-lg">${title}</h4>
+                <p class="text-sm">${message.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')}</p>
+            `;
+            
+            // Rola para a área de coaching para que o usuário veja o feedback
+            coachingArea.scrollIntoView({ behavior: 'smooth' });
+        }
+
+
+        /** Função para chamar o Assistente Virtual (Gemini API) */
+        window.askAssistant = async function() {
+            if (!isAuthReady) {
+                alertUser("⚠️ Aguarde a autenticação antes de usar o Assistente.", "bg-yellow-100 text-yellow-700");
+                return;
+            }
+            
+            const queryEl = document.getElementById('assistant-query');
+            const responseEl = document.getElementById('assistant-response');
+            const query = queryEl.value.trim();
+
+            if (query === "") {
+                alertUser("⚠️ Por favor, digite sua pergunta.", "bg-yellow-100 text-yellow-700");
+                return;
+            }
+
+            // Mostrar estado de carregamento
+            responseEl.innerHTML = `
+                <div class="flex items-center space-x-2 text-teal-600">
+                    <svg class="animate-spin h-5 w-5 text-teal-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    <span>Analisando seus dados e gerando dicas...</span>
+                </div>
+            `;
+            queryEl.disabled = true;
+            document.getElementById('btn-ask-assistant').disabled = true;
+
+
+            // 1. Preparar o contexto de dados para a IA
+            const contextData = {
+                rendaMensal: formatCurrency(currentIncome),
+                saldoRestante: formatCurrency(currentIncome - transactionsData.reduce((sum, t) => sum + t.amount, 0)),
+                totalGastos: formatCurrency(transactionsData.reduce((sum, t) => sum + t.amount, 0)),
+                historicoTransacoes: transactionsData.map(t => 
+                    `[${t.date.substring(5, 10)}] ${formatCurrency(t.amount)} - ${t.description} (Necessidade: ${t.necessity}, Emoção: ${t.emotion})`
+                ).slice(0, 10) // Limita a 10 transações para não estourar o prompt
+            };
+            
+            const systemPrompt = `Você é um Assistente de Economia e Consciência Financeira. Sua tarefa é analisar o contexto financeiro do usuário e sua pergunta, e fornecer dicas de economia e bem-estar financeiro PERSONALIZADAS. Fale sempre em português.
+                --- CONTEXTO FINANCEIRO DO USUÁRIO ---
+                Renda Mensal: ${contextData.rendaMensal}
+                Total Gasto neste ciclo: ${contextData.totalGastos}
+                Saldo Restante: ${contextData.saldoRestante}
+                Últimas Transações (10 mais recentes, [Data] Valor - Descrição):
+                ${contextData.historicoTransacoes.join('\n')}
+                --- FIM DO CONTEXTO ---
+            `;
+
+            const userQuery = `Baseado no meu contexto, responda a seguinte pergunta de forma útil e encorajadora: "${query}"`;
+            
+            const apiKey = ""; 
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
+
+            const payload = {
+                contents: [{ parts: [{ text: userQuery }] }],
+                systemInstruction: { parts: [{ text: systemPrompt }] },
+            };
+
+            let responseText = "Desculpe, houve um erro ao processar sua solicitação.";
+            
+            // Implementação de Backoff Exponencial
+            const MAX_RETRIES = 3;
+            for (let i = 0; i < MAX_RETRIES; i++) {
+                try {
+                    const response = await fetch(apiUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+                    
+                    if (response.ok) {
+                        const result = await response.json();
+                        responseText = result.candidates?.[0]?.content?.parts?.[0]?.text || "Assistente não conseguiu gerar a resposta. Tente refinar a pergunta.";
+                        break; // Sucesso, sai do loop
+                    } else if (response.status === 429 && i < MAX_RETRIES - 1) {
+                        // Rate limit, tenta novamente com delay
+                        const delay = Math.pow(2, i) * 1000; // 1s, 2s, 4s...
+                        await new Promise(resolve => setTimeout(resolve, delay));
+                    } else {
+                        throw new Error(`Erro de API: ${response.status} ${response.statusText}`);
+                    }
+                } catch (error) {
+                    console.error("Erro na chamada da API:", error);
+                    responseText = "Erro de rede ou na API. Verifique sua conexão ou tente novamente.";
+                    if (i === MAX_RETRIES - 1) break; // Última tentativa falhou
+                }
+            }
+
+            // Exibir resposta e reativar inputs
+            responseEl.innerHTML = responseText.replace(/\n/g, '<br>');
+            queryEl.disabled = false;
+            document.getElementById('btn-ask-assistant').disabled = false;
+            queryEl.value = ''; // Limpa a query
+        }
+
+        /** Formata um número para Real Brasileiro (BRL) */
+        function formatCurrency(num) {
+            return new Intl.NumberFormat('pt-BR', { 
+                style: 'currency', 
+                currency: 'BRL',
+                minimumFractionDigits: 2 
+            }).format(num);
+        }
+        
+        /** Exibe um feedback temporário (não usamos alert() devido às restrições do iframe) */
+        function alertUser(message, styleClass) {
+            // Cria um elemento de feedback simples no lugar
+            const statusEl = document.createElement('div');
+            statusEl.className = `p-3 rounded-lg mt-3 text-sm animated-entry ${styleClass}`;
+            statusEl.textContent = message;
+            
+            const formContainer = document.querySelector('.lg\\:col-span-1 > .bg-white'); // O primeiro card na coluna 1
+            formContainer.appendChild(statusEl);
+
+            setTimeout(() => {
+                statusEl.remove();
+            }, 3000);
+        }
+
+        // Inicia o App
+        initFirebaseAndAuth();
+    </script>
+</body>
+</html>
