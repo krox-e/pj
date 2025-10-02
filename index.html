@@ -3,582 +3,329 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Orçamento Simples: Consciência Financeira</title>
-    <!-- Carrega Tailwind CSS para estilização rápida e responsiva -->
+    <title>Teste Vocacional IA: Descubra Seu Caminho</title>
+    <!-- Carrega Tailwind CSS para estilização -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Configuração de cor e fonte -->
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #f0f4f8; /* Fundo mais claro */
+            background-color: #f0f4f8; /* Fundo leve */
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
         }
         .text-gradient {
-            background-image: linear-gradient(to right, #10b981, #059669); /* Verde menta/esmeralda */
+            background-image: linear-gradient(to right, #4c51bf, #6b46c1); /* Roxo/Índigo inspirador */
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
         .card-shadow {
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-            transition: transform 0.3s ease-in-out;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
         }
-        .card-shadow:hover {
-            transform: translateY(-2px);
+        .quiz-option {
+            transition: all 0.2s ease;
+            cursor: pointer;
         }
-        .animated-entry {
-            animation: fadeIn 0.5s ease-out;
+        .quiz-option:hover {
+            background-color: #e0e7ff; /* Indigo 100 */
+            transform: translateY(-1px);
         }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        .error-message {
-            background-color: #fee2e2;
-            color: #ef4444;
-            border: 1px solid #fca5a5;
-            padding: 8px 12px;
-            border-radius: 6px;
+        .quiz-option.selected {
+            border-color: #4c51bf; /* Indigo 600 */
+            background-color: #c3dafe; /* Indigo 200 */
             font-weight: 600;
+        }
+        .loading-animation {
+            border-top-color: #4c51bf;
+            animation: spin 1s ease-in-out infinite;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
         }
     </style>
 </head>
 <body class="text-gray-800">
 
-    <!-- Cabeçalho e Navegação -->
+    <!-- Cabeçalho -->
     <header class="bg-white shadow-lg sticky top-0 z-50">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
-            <h1 class="text-3xl font-extrabold text-gradient">Orçamento Simples</h1>
-            <div id="auth-status" class="text-sm text-gray-500 truncate max-w-[150px] sm:max-w-full" title="Seu ID de Usuário (Necessário para salvar dados)">
-                Aguardando autenticação...
-            </div>
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+            <h1 class="text-3xl font-extrabold text-gradient text-center">
+                Descubra Seu Caminho - Teste Vocacional IA
+            </h1>
+            <p class="text-center text-sm text-gray-500 mt-1">5 Perguntas para um futuro mais claro.</p>
         </div>
     </header>
 
-    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-16">
+    <!-- Área Principal do Quiz -->
+    <main class="flex-grow max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10 flex items-start justify-center">
 
-        <!-- ALERTA DE CONFIGURAÇÃO CRÍTICO -->
-        <div id="config-alert" class="hidden my-6 p-4 rounded-lg error-message">
-            🚨 **ERRO DE CONFIGURAÇÃO:** O Firebase e a IA não estão conectados. Por favor, edite o código HTML e substitua os placeholders `SUA_CHAVE_FIREBASE_AQUI` e `SUA_CHAVE_GEMINI_API_AQUI` pelas suas chaves reais.
+        <div id="quiz-container" class="bg-white p-8 rounded-xl card-shadow w-full max-w-2xl">
+            
+            <!-- Progress Bar -->
+            <div class="mb-6">
+                <div class="text-sm font-medium text-indigo-600 mb-2">
+                    <span id="progress-text">Pergunta 1 de 5</span>
+                </div>
+                <div class="w-full bg-gray-200 rounded-full h-2.5">
+                    <div id="progress-bar" class="bg-indigo-600 h-2.5 rounded-full transition-all duration-500" style="width: 0%"></div>
+                </div>
+            </div>
+
+            <!-- Conteúdo do Quiz/Resultado -->
+            <div id="content-area">
+                <!-- O conteúdo (perguntas ou resultado) será injetado aqui pelo JS -->
+                <p class="text-center text-gray-500">Iniciando teste...</p>
+            </div>
+
+            <!-- Botões de Navegação -->
+            <div id="navigation-buttons" class="mt-8 flex justify-between">
+                <button id="btn-back" onclick="previousQuestion()" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold py-2 px-4 rounded-lg transition duration-200 shadow-md disabled:opacity-50" disabled>
+                    Voltar
+                </button>
+                <button id="btn-next" onclick="nextQuestion()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded-lg transition duration-200 shadow-lg disabled:opacity-50" disabled>
+                    Próxima Pergunta
+                </button>
+            </div>
+
         </div>
-        
-        <!-- Área Principal do Dashboard -->
-        <section class="grid lg:grid-cols-3 gap-8 mb-12">
-
-            <!-- Coluna 1: Entrada de Dados (Renda e Despesa) -->
-            <div class="lg:col-span-1 space-y-8">
-                
-                <!-- Card de Renda Mensal -->
-                <div class="bg-white p-6 rounded-xl shadow-xl border-t-4 border-green-500">
-                    <h2 class="text-2xl font-bold mb-4 text-green-700">1. Sua Renda Mensal</h2>
-                    <label for="monthly-income" class="block text-sm font-medium text-gray-700 mb-2">Quanto você ganha por mês? (R$)</label>
-                    <div class="flex space-x-2">
-                        <input type="number" id="monthly-income" value="4000" class="flex-grow rounded-md border-gray-300 shadow-sm p-3 border focus:border-green-500 focus:ring-green-500" placeholder="4000.00">
-                        <button onclick="saveIncome()" id="btn-save-income" class="bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-4 rounded-lg transition duration-200 shadow-md">
-                            Salvar
-                        </button>
-                    </div>
-                    <p id="income-status" class="mt-2 text-sm text-gray-500">Renda salva: R$ 0,00</p>
-                </div>
-
-                <!-- Card de Novo Gasto -->
-                <div class="bg-white p-6 rounded-xl shadow-xl border-t-4 border-red-500">
-                    <h2 class="text-2xl font-bold mb-4 text-red-700">2. Registrar Novo Gasto</h2>
-                    
-                    <form id="expense-form" class="space-y-4">
-                        
-                        <div>
-                            <label for="expense-amount" class="block text-sm font-medium text-gray-700">Valor Gasto (R$)</label>
-                            <input type="number" id="expense-amount" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-3 border focus:border-red-500 focus:ring-red-500" placeholder="50.00">
-                        </div>
-
-                        <div>
-                            <label for="expense-description" class="block text-sm font-medium text-gray-700">O que você comprou?</label>
-                            <input type="text" id="expense-description" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-3 border focus:border-red-500 focus:ring-red-500" placeholder="Pizza e refrigerante">
-                        </div>
-
-                        <div>
-                            <label for="expense-necessity" class="block text-sm font-medium text-gray-700">Nível de Necessidade</label>
-                            <select id="expense-necessity" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-3 border focus:border-red-500 focus:ring-red-500">
-                                <option value="Alto">Essencial (Aluguel, Contas)</option>
-                                <option value="Medio">Importante (Manutenção, Saúde)</option>
-                                <option value="Baixo" selected>Desnecessário (Impulso, Lazer)</option>
-                            </select>
-                        </div>
-                        
-                        <div>
-                            <label for="expense-emotion" class="block text-sm font-medium text-gray-700">Como você se sentiu gastando?</label>
-                            <select id="expense-emotion" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-3 border focus:border-red-500 focus:ring-red-500">
-                                <option value="Felicidade">Feliz / Satisfeito</option>
-                                <option value="Tristeza">Triste / Chateado</option>
-                                <option value="Ansiedade">Ansioso / Impulsivo</option>
-                                <option value="Apatia">Neutro / Indiferente</option>
-                                <option value="Culpa">Culpado / Arrependido</option>
-                            </select>
-                        </div>
-
-                        <button type="submit" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 rounded-lg transition duration-200 shadow-md">
-                            Registrar Gasto
-                        </button>
-                    </form>
-                </div>
-            </div>
-
-            <!-- Coluna 2 e 3: Resumo, Coaching e Assistente -->
-            <div class="lg:col-span-2 space-y-8">
-                
-                <!-- Card de Resumo Financeiro (Dashboard) -->
-                <div class="bg-white p-6 rounded-xl shadow-xl border-t-4 border-blue-500">
-                    <h2 class="text-2xl font-bold mb-4 text-blue-700">3. Seu Resumo Financeiro</h2>
-                    <div class="grid grid-cols-3 gap-4 text-center">
-                        <div class="bg-green-100 p-4 rounded-lg">
-                            <p class="text-sm text-green-700 font-medium">Renda Mensal</p>
-                            <p id="display-income" class="text-2xl font-extrabold text-green-800">R$ 0,00</p>
-                        </div>
-                        <div class="bg-red-100 p-4 rounded-lg">
-                            <p class="text-sm text-red-700 font-medium">Total Gasto</p>
-                            <p id="display-spent" class="text-2xl font-extrabold text-red-800">R$ 0,00</p>
-                        </div>
-                        <div id="balance-card" class="bg-blue-100 p-4 rounded-lg">
-                            <p class="text-sm text-blue-700 font-medium">Saldo Restante</p>
-                            <p id="display-balance" class="text-2xl font-extrabold text-blue-800">R$ 0,00</p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Card de Feedback e Coaching (Resultado do último gasto) -->
-                <div id="coaching-area" class="bg-yellow-100 p-6 rounded-xl shadow-2xl border-t-4 border-yellow-500 hidden animated-entry">
-                    <h2 class="text-2xl font-bold mb-4 text-yellow-800 flex items-center">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-lightbulb text-yellow-600 mr-2"><path d="M15 14c.2-.8.2-2.7-.6-4.2a6 6 0 0 0-6 0c-.8 1.5-.8 3.4-.6 4.2"/><path d="M11 17h2"/><path d="M12 22a4 4 0 0 0 4-4H8a4 4 0 0 0 4 4"/><path d="M12 10V2"/></svg>
-                        Análise de Gasto & Coaching
-                    </h2>
-                    <div id="coaching-message" class="text-gray-700 space-y-3">
-                        <!-- Mensagem de feedback será inserida aqui -->
-                    </div>
-                </div>
-                
-                <!-- Card do Assistente Virtual (NOVO) -->
-                <div class="bg-white p-6 rounded-xl shadow-xl border-t-4 border-teal-500">
-                    <h2 class="text-2xl font-bold mb-4 text-teal-700">4. Assistente de Economia (IA)</h2>
-                    
-                    <div class="space-y-4">
-                        <div id="assistant-response" class="min-h-[100px] p-3 bg-gray-50 rounded-lg border border-gray-200 text-gray-700">
-                            Olá! Sou seu assistente de finanças. Pergunte-me como economizar, sobre seus hábitos de gasto ou como planejar uma meta!
-                        </div>
-                        
-                        <div class="flex space-x-2">
-                            <input type="text" id="assistant-query" class="flex-grow rounded-md border-gray-300 shadow-sm p-3 border focus:border-teal-500 focus:ring-teal-500" placeholder="Ex: 'Quais os 3 maiores vilões dos meus gastos?'">
-                            <button onclick="askAssistant()" id="btn-ask-assistant" class="bg-teal-600 hover:bg-teal-700 text-white font-semibold py-3 px-4 rounded-lg transition duration-200 shadow-md">
-                                Perguntar
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Lista de Transações -->
-                <div class="bg-white p-6 rounded-xl shadow-xl">
-                    <h2 class="text-xl font-bold mb-4 text-gray-700">Histórico de Transações</h2>
-                    <ul id="transactions-list" class="space-y-3">
-                        <li class="text-gray-500">Nenhuma transação registrada ainda.</li>
-                    </ul>
-                </div>
-            </div>
-        </section>
-
     </main>
 
-    <!-- Importações Firebase -->
+    <footer class="bg-white mt-auto py-4 text-center text-xs text-gray-500 shadow-inner">
+        Desenvolvido com Consciência e Gemini API para análise vocacional.
+    </footer>
+
+
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged, setPersistence, browserLocalPersistence } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, doc, setDoc, onSnapshot, collection, query, orderBy, addDoc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-        import { setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-        
-        // Ativar logs de debug para Firestore
-        setLogLevel('Debug');
-
-        let db;
-        let auth;
-        let userId;
-
         // ===================================================================================
-        // 🚨 PASSO 1: CONFIGURAÇÃO DE CHAVES (CRÍTICO PARA FUNCIONAMENTO FORA DESTE AMBIENTE)
+        // 🚨 CONFIGURAÇÃO DE CHAVES (CRÍTICO PARA FUNCIONAMENTO FORA DESTE AMBIENTE)
         // ===================================================================================
 
-        // Variáveis fornecidas pelo ambiente Canvas (onde este código está rodando agora)
+        // Variáveis fornecidas pelo ambiente Canvas (para o Assistente IA funcionar)
         const canvasAppId = typeof __app_id !== 'undefined' ? __app_id : null;
-        const canvasFirebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : null;
-        const canvasAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
-
-        // --- 🔒 CONFIGURAÇÃO MANUAL PARA DEPLOY EXTERNO (GITHUB PAGES) ---
-        // SE VOCÊ FOR HOSPEDAR ISTO NO GITHUB PAGES, SUBSTITUA AS CHAVES ABAIXO:
+        
+        // Chave Gemini API (inserida pelo usuário)
+        const finalGeminiKey = canvasAppId ? "" : "AIzaSyDP4GWqg1oWSj9jzzMp49VNzQzabgrelbc"; 
+        // Se a chave não fosse inserida, teríamos que manter o código abaixo para alerta:
+        /*
         const GH_PAGES_CONFIG = {
-            // Chaves do seu Projeto Firebase
-            firebase: {
-                apiKey: "SUA_CHAVE_FIREBASE_AQUI", // <-- OBRIGATÓRIO!
-                authDomain: "SEU_AUTH_DOMAIN_AQUI",
-                projectId: "SEU_PROJECT_ID_AQUI",
-                storageBucket: "SEU_STORAGE_BUCKET_AQUI",
-                messagingSenderId: "SEU_MESSAGING_SENDER_ID_AQUI",
-                appId: "SEU_APP_ID_AQUI"
-            },
-            // Chave do seu Gemini API
-            geminiApiKey: "SUA_CHAVE_GEMINI_API_AQUI", // <-- OBRIGATÓRIO PARA O ASSISTENTE IA!
-            // ID fixo para o caminho do Firestore (se não for o Canvas)
-            appId: 'app-de-orcamento-pessoal' 
+            geminiApiKey: "AIzaSyDP4GWqg1oWSj9jzzMp49VNzQzabgrelbc",
         };
-        
-        // Determina qual configuração usar
-        const appId = canvasAppId || GH_PAGES_CONFIG.appId;
-        const firebaseConfig = canvasFirebaseConfig || GH_PAGES_CONFIG.firebase;
-        const geminiApiKey = canvasAppId ? "" : GH_PAGES_CONFIG.geminiApiKey; // Usa chave vazia se estiver no Canvas
-        const initialAuthToken = canvasAuthToken; 
-        
-        // FIM DA CONFIGURAÇÃO MANUAL
+        const geminiApiKey = canvasAppId ? "" : GH_PAGES_CONFIG.geminiApiKey;
+        const finalGeminiKey = geminiApiKey.includes("GEMINI_API_AQUI") ? null : geminiApiKey;
+        */
+
+        // ===================================================================================
+        // DADOS E ESTADO DO QUIZ
         // ===================================================================================
 
-        // Referências Firestore
-        const PRIVATE_PATH = (collectionName) => `artifacts/${appId}/users/${userId}/${collectionName}`;
+        let currentStep = 0;
+        let userAnswers = {}; // { 'q1': 'A', 'q2': 'C', ... }
+        let totalQuestions = 0;
 
-        // Estado Global
-        let currentIncome = 0;
-        let isAuthReady = false;
-        let transactionsData = []; // Armazena o histórico de transações para o Assistente
+        const questions = [
+            {
+                id: 'q1',
+                question: "O que te dá mais energia e satisfação no dia a dia?",
+                options: {
+                    A: "Interagir e colaborar com muitas pessoas, resolvendo conflitos ou motivando.",
+                    B: "Analisar dados, encontrar padrões, construir sistemas ou resolver problemas técnicos complexos.",
+                    C: "Criar algo do zero, seja um produto físico, uma obra de arte ou um design digital.",
+                    D: "Ajudar diretamente indivíduos ou comunidades a melhorar suas vidas, focando no bem-estar."
+                },
+                profile: { A: 'Social', B: 'Lógico', C: 'Criativo', D: 'Empático' }
+            },
+            {
+                id: 'q2',
+                question: "Qual ambiente de trabalho é o mais atraente para você?",
+                options: {
+                    A: "Um escritório movimentado, com reuniões constantes e troca de ideias.",
+                    B: "Um local tranquilo, como casa ou laboratório, onde a concentração profunda é prioridade.",
+                    C: "Um estúdio, oficina ou campo, onde você possa ver o resultado físico do seu trabalho.",
+                    D: "Um local que exige muita escuta, como um consultório, sala de aula ou centro comunitário."
+                },
+                profile: { A: 'Dinâmico', B: 'Focado', C: 'Tangível', D: 'Atendimento' }
+            },
+            {
+                id: 'q3',
+                question: "Qual das seguintes atividades você preferiria estudar ou dominar?",
+                options: {
+                    A: "Técnicas de persuasão, marketing e oratória.",
+                    B: "Cálculo avançado, programação e desenvolvimento de algoritmos.",
+                    C: "Design de interfaces (UI/UX), escrita criativa ou composição musical.",
+                    D: "Psicologia humana, gestão de crises ou técnicas de saúde e bem-estar."
+                },
+                profile: { A: 'Comunicação', B: 'Exatas', C: 'Artes', D: 'Humanas' }
+            },
+            {
+                id: 'q4',
+                question: "Ao enfrentar um desafio, qual é sua reação mais natural?",
+                options: {
+                    A: "Organizo uma equipe e delego tarefas, focando em coordenar a solução.",
+                    B: "Quebro o problema em partes menores e busco a causa raiz com lógica e método.",
+                    C: "Busco formas não-convencionais de resolver, tentando abordagens inesperadas.",
+                    D: "Me concentro em como o problema afeta as pessoas envolvidas, buscando uma solução justa e equilibrada."
+                },
+                profile: { A: 'Liderança', B: 'Metódico', C: 'Inovador', D: 'Colaborativo' }
+            },
+            {
+                id: 'q5',
+                question: "O que significa 'sucesso' em uma carreira para você?",
+                options: {
+                    A: "Ter uma grande rede de contatos e ser reconhecido como líder no meu campo.",
+                    B: "Criar um sistema ou tecnologia que funcione perfeitamente e mude a forma como fazemos algo.",
+                    C: "Expressar minha visão de mundo através do meu trabalho e ter liberdade criativa.",
+                    D: "Deixar um impacto positivo claro na sociedade, na vida de outras pessoas ou no planeta."
+                },
+                profile: { A: 'Influência', B: 'Excelência', C: 'Liberdade', D: 'Propósito' }
+            }
+        ];
 
-        // --- 1. Inicialização e Autenticação ---
-        async function initFirebaseAndAuth() {
-            // Verifica se a chave do Firebase é o placeholder
-            const isPlaceholder = !firebaseConfig.apiKey || firebaseConfig.apiKey.includes("FIREBASE_AQUI");
+        totalQuestions = questions.length;
+
+
+        // ===================================================================================
+        // LÓGICA DO QUIZ
+        // ===================================================================================
+
+        window.onload = () => {
+            renderQuestion(currentStep);
+        };
+
+        /** Renderiza a pergunta atual ou a tela final. */
+        function renderQuestion(step) {
+            const contentArea = document.getElementById('content-area');
+            const btnNext = document.getElementById('btn-next');
+            const btnBack = document.getElementById('btn-back');
+            const progressText = document.getElementById('progress-text');
+            const progressBar = document.getElementById('progress-bar');
+
+            // Atualiza o progresso
+            const progressPercent = ((step) / totalQuestions) * 100;
+            progressBar.style.width = `${progressPercent}%`;
+            progressText.textContent = `Pergunta ${step + 1} de ${totalQuestions}`;
             
-            if (!canvasAppId && isPlaceholder) {
-                console.error("Firebase config não encontrada ou usando placeholder. O salvamento de dados foi desativado.");
-                document.getElementById('auth-status').textContent = "❌ ERRO: Chaves do Firebase ausentes.";
-                document.getElementById('config-alert').classList.remove('hidden');
-                isAuthReady = true; // Permite que a UI carregue, mas o DB será nulo.
-                return;
-            }
-
-            const app = initializeApp(firebaseConfig);
-            db = getFirestore(app);
-            auth = getAuth(app);
+            // Lógica dos Botões
+            btnBack.disabled = step === 0;
+            btnNext.textContent = (step === totalQuestions - 1) ? 'Ver Resultado' : 'Próxima Pergunta';
             
-            // Tenta manter a persistência da autenticação
-            await setPersistence(auth, browserLocalPersistence);
-
-            onAuthStateChanged(auth, async (user) => {
-                if (user) {
-                    userId = user.uid;
-                    document.getElementById('auth-status').textContent = `Usuário (ID): ${userId}`;
-                } else {
-                    try {
-                        // Se tiver token do Canvas, usa-o.
-                        if (initialAuthToken) {
-                            await signInWithCustomToken(auth, initialAuthToken);
-                        } else {
-                            // Se não tiver token (caso de GitHub Pages), loga anonimamente
-                            await signInAnonymously(auth);
-                        }
-                    } catch (error) {
-                        console.error("Erro ao autenticar:", error);
-                        document.getElementById('auth-status').textContent = "Erro de autenticação.";
-                        return;
-                    }
-                    userId = auth.currentUser?.uid || crypto.randomUUID();
-                    document.getElementById('auth-status').textContent = `Usuário (ID): ${userId}`;
-                }
-
-                // Uma vez autenticado e com userId, podemos carregar os dados
-                isAuthReady = true;
-                if (userId && db) {
-                    loadDataListeners();
-                } else if (!db) {
-                    console.warn("DB não está pronto. Funcionalidades de salvamento desativadas.");
-                } else {
-                    console.error("Não foi possível obter um User ID.");
-                }
-            });
-        }
-
-        // --- 2. Carregar Dados em Tempo Real (Listeners) ---
-        function loadDataListeners() {
-            if (!isAuthReady || !db || !userId) {
-                console.warn("Firebase ou Auth não estão prontos para listeners.");
-                return;
+            // Verifica se a resposta foi dada para habilitar o botão
+            if (userAnswers[questions[step].id]) {
+                btnNext.disabled = false;
+            } else {
+                btnNext.disabled = true;
             }
 
-            // Listener para Renda Mensal (Documento único)
-            const profileRef = doc(db, PRIVATE_PATH('financial_data'), 'user_profile');
-            onSnapshot(profileRef, (docSnap) => {
-                if (docSnap.exists()) {
-                    const data = docSnap.data();
-                    currentIncome = data.monthlyIncome || 0;
-                    document.getElementById('monthly-income').value = currentIncome;
-                    updateDashboard(transactionsData, currentIncome); // Passa transações atuais
-                    document.getElementById('income-status').textContent = `Renda salva: ${formatCurrency(currentIncome)}`;
-                } else {
-                    console.log("Perfil não encontrado, usando renda padrão. Tentando salvar a inicial.");
-                    // Se o documento não existe, salva a renda inicial para criá-lo
-                    if(db) saveIncome(true); 
-                }
-            }, (error) => console.error("Erro ao carregar perfil:", error));
-
-
-            // Listener para Transações (Coleção)
-            const transactionsQuery = query(collection(db, PRIVATE_PATH('transactions')));
-            onSnapshot(transactionsQuery, (snapshot) => {
-                const transactions = [];
-                snapshot.forEach(doc => {
-                    transactions.push({ id: doc.id, ...doc.data() });
-                });
-                // Ordena em memória por data (mais recente primeiro)
-                transactions.sort((a, b) => new Date(b.date) - new Date(a.date));
-                renderData(transactions); // Chama renderData para atualizar lista e dashboard
-            }, (error) => console.error("Erro ao carregar transações:", error));
-        }
-
-
-        // --- 3. Salvar Renda Mensal ---
-        window.saveIncome = async function(silent = false) {
-            if (!isAuthReady || !db || !userId) {
-                if (!silent) {
-                    alertUser("⚠️ Aguardando inicialização do Firebase para salvar. Verifique as configurações.", "bg-yellow-100 text-yellow-700");
-                }
-                return;
-            }
-
-            const incomeValue = parseFloat(document.getElementById('monthly-income').value);
-
-            if (isNaN(incomeValue) || incomeValue < 0) {
-                alertUser("⚠️ Por favor, insira um valor de renda mensal válido.", "bg-red-100 text-red-700");
-                return;
-            }
+            const currentQuestion = questions[step];
             
-            currentIncome = incomeValue;
-            
-            try {
-                const profileRef = doc(db, PRIVATE_PATH('financial_data'), 'user_profile');
-                await setDoc(profileRef, { monthlyIncome: incomeValue }, { merge: true });
-                if (!silent) {
-                    alertUser("✅ Renda mensal atualizada com sucesso!", "bg-green-100 text-green-700");
-                }
-            } catch (error) {
-                console.error("Erro ao salvar a renda:", error);
-                alertUser("❌ Erro ao salvar a renda. (Verifique suas Regras de Segurança do Firestore)", "bg-red-100 text-red-700");
-            }
-        }
+            // HTML da Pergunta
+            let questionHtml = `
+                <h3 class="text-xl font-bold text-gray-700 mb-6">
+                    ${currentQuestion.question}
+                </h3>
+                <div id="options-container" class="space-y-4">
+            `;
 
-
-        // --- 4. Adicionar Nova Transação ---
-        document.getElementById('expense-form').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            if (!isAuthReady || !db || !userId) {
-                alertUser("⚠️ Sistema não está pronto para salvar dados. Verifique as configurações do Firebase.", "bg-yellow-100 text-yellow-700");
-                return;
-            }
-
-            const amount = parseFloat(document.getElementById('expense-amount').value);
-            const description = document.getElementById('expense-description').value.trim();
-            const necessity = document.getElementById('expense-necessity').value;
-            const emotion = document.getElementById('expense-emotion').value;
-
-            if (isNaN(amount) || amount <= 0 || description === "") {
-                alertUser("⚠️ Preencha todos os campos corretamente (Valor > 0).", "bg-red-100 text-red-700");
-                return;
-            }
-            
-            const newTransaction = {
-                date: new Date().toISOString(),
-                amount: amount,
-                description: description,
-                necessity: necessity,
-                emotion: emotion
-            };
-            
-            try {
-                const transactionsRef = collection(db, PRIVATE_PATH('transactions'));
-                await addDoc(transactionsRef, newTransaction);
-                
-                // Limpa o formulário e exibe o coaching
-                document.getElementById('expense-form').reset();
-                generateCoaching(newTransaction);
-                
-            } catch (error) {
-                console.error("Erro ao adicionar transação:", error);
-                alertUser("❌ Erro ao salvar a transação. (Verifique suas Regras de Segurança do Firestore)", "bg-red-100 text-red-700");
-            }
-        });
-
-
-        // --- 5. Funções de Exibição e Utilitários ---
-        
-        /** Atualiza os displays do dashboard */
-        function updateDashboard(transactions, income = currentIncome) {
-            let totalSpent = 0;
-            if (transactions) {
-                totalSpent = transactions.reduce((sum, t) => sum + t.amount, 0);
-            }
-
-            const balance = income - totalSpent;
-
-            document.getElementById('display-income').textContent = formatCurrency(income);
-            document.getElementById('display-spent').textContent = formatCurrency(totalSpent);
-            document.getElementById('display-balance').textContent = formatCurrency(balance);
-
-            // Atualiza a cor de fundo do Saldo Restante
-            const balanceCard = document.getElementById('balance-card');
-            balanceCard.classList.remove('bg-green-100', 'bg-red-100', 'bg-blue-100', 'bg-yellow-100');
-            document.getElementById('display-balance').classList.remove('text-green-800', 'text-red-800', 'text-blue-800', 'text-yellow-800');
-            
-            if (balance >= income * 0.2) { // Acima de 20%
-                balanceCard.classList.add('bg-green-100');
-                document.getElementById('display-balance').classList.add('text-green-800');
-            } else if (balance >= 0) {
-                balanceCard.classList.add('bg-yellow-100');
-                document.getElementById('display-balance').classList.add('text-yellow-800');
-            } else { // Negativo
-                balanceCard.classList.add('bg-red-100');
-                document.getElementById('display-balance').classList.add('text-red-800');
-            }
-            document.getElementById('display-balance').parentElement.classList.remove('text-blue-700'); // Remove cor inicial
-        }
-
-        /** Renderiza a lista de transações e atualiza o dashboard */
-        function renderData(transactions) {
-            transactionsData = transactions; // Guarda os dados globalmente
-            updateDashboard(transactions);
-            const listEl = document.getElementById('transactions-list');
-            listEl.innerHTML = ''; // Limpa a lista
-
-            if (transactions.length === 0) {
-                 listEl.innerHTML = '<li class="text-gray-500 p-2 text-center">Nenhuma transação registrada. Comece agora!</li>';
-                 return;
-            }
-
-            transactions.forEach(t => {
-                const date = new Date(t.date).toLocaleDateString('pt-BR');
-                const li = document.createElement('li');
-                li.className = 'flex justify-between items-center p-3 bg-gray-50 rounded-lg border-l-4 border-red-400 animated-entry';
-                li.innerHTML = `
-                    <div>
-                        <p class="font-semibold">${t.description} - <span class="text-red-600">${formatCurrency(t.amount)}</span></p>
-                        <p class="text-xs text-gray-500">
-                            ${date} | Necessidade: ${t.necessity} | Emoção: ${t.emotion}
-                        </p>
+            // Loop para as opções
+            for (const key in currentQuestion.options) {
+                const isSelected = userAnswers[currentQuestion.id] === key;
+                questionHtml += `
+                    <div 
+                        class="quiz-option p-4 border-2 border-gray-200 rounded-lg ${isSelected ? 'selected' : ''}" 
+                        onclick="selectAnswer('${currentQuestion.id}', '${key}')"
+                        data-answer="${key}"
+                    >
+                        <span class="font-semibold text-indigo-700">${key}:</span> ${currentQuestion.options[key]}
                     </div>
                 `;
-                listEl.appendChild(li);
+            }
+            
+            questionHtml += `</div>`;
+            contentArea.innerHTML = questionHtml;
+        }
+
+        /** Seleciona a resposta e atualiza o estado */
+        window.selectAnswer = function(questionId, answerKey) {
+            userAnswers[questionId] = answerKey;
+            
+            // Remove a classe 'selected' de todos e adiciona ao clicado
+            const optionsContainer = document.getElementById('options-container');
+            Array.from(optionsContainer.children).forEach(option => {
+                option.classList.remove('selected');
+                if (option.dataset.answer === answerKey) {
+                    option.classList.add('selected');
+                }
             });
-        }
 
-        /** Gera a mensagem de coaching personalizada */
-        function generateCoaching(transaction) {
-            const { description, amount, necessity, emotion } = transaction;
-            let title = '';
-            let message = '';
-            let style = '';
+            // Habilita o botão "Próxima Pergunta"
+            document.getElementById('btn-next').disabled = false;
+        };
 
-            const expenseFormatted = formatCurrency(amount);
-
-            if (necessity === 'Baixo' && (emotion === 'Ansiedade' || emotion === 'Culpa')) {
-                // Gasto desnecessário por impulso/culpa (o pior cenário)
-                title = "🚨 Gasto de Impulso Detectado! 🚨";
-                message = `O gasto de **${expenseFormatted}** em "${description}" não era essencial e foi motivado por **${emotion}**. Isso é um sinal! Sempre que sentir essa emoção, tente esperar 24 horas antes de comprar. Sua carteira e sua mente agradecem.`;
-                style = 'bg-red-100 text-red-800 border-red-500';
-            } else if (necessity === 'Baixo' && emotion === 'Felicidade') {
-                // Gasto desnecessário, mas que trouxe satisfação (Lazer planejado)
-                title = "✨ Satisfação Pessoal é Investimento! ✨";
-                message = `O gasto de **${expenseFormatted}** em "${description}" trouxe **Felicidade**! Se isso foi um gasto de lazer planejado e dentro da sua meta, parabéns! Lembre-se, o objetivo é gastar conscientemente, mesmo com o que é 'desnecessário' para sobreviver.`;
-                style = 'bg-green-100 text-green-800 border-green-500';
-            } else if (necessity === 'Alto' && (emotion === 'Tristeza' || emotion === 'Apatia')) {
-                // Gasto essencial, mas que é pesado (Contas)
-                title = "💙 Cuidado com o Básico 💙";
-                message = `O gasto essencial de **${expenseFormatted}** em "${description}" gerou **${emotion}**. Contas essenciais podem pesar, mas garantir o básico é o primeiro passo para a liberdade financeira. Podemos tentar renegociar ou buscar alternativas mais baratas no próximo mês?`;
-                style = 'bg-blue-100 text-blue-800 border-blue-500';
+        /** Avança para a próxima pergunta ou finaliza o quiz */
+        window.nextQuestion = function() {
+            if (currentStep < totalQuestions - 1) {
+                currentStep++;
+                renderQuestion(currentStep);
             } else {
-                // Cenário neutro ou não crítico
-                title = "💡 Registro Concluído com Sucesso! 💡";
-                message = `Você registrou **${expenseFormatted}** em "${description}". O simples ato de registrar já aumenta sua consciência. Pense: foi estritamente necessário (${necessity})? Você se sentiu bem (${emotion})? Continue monitorando!`;
-                style = 'bg-yellow-100 text-yellow-800 border-yellow-500';
+                // FIM DO QUIZ: Oculta botões e chama a IA
+                document.getElementById('navigation-buttons').classList.add('hidden');
+                document.getElementById('progress-bar').style.width = '100%';
+                document.getElementById('progress-text').textContent = 'Análise Finalizada';
+                displayLoading();
+                generateRecommendation();
             }
+        };
 
-            // Exibir a mensagem no painel de coaching
-            const coachingArea = document.getElementById('coaching-area');
-            coachingArea.classList.remove('hidden', 'bg-red-100', 'bg-green-100', 'bg-blue-100', 'bg-yellow-100');
-            coachingArea.classList.add(style);
-            
-            document.getElementById('coaching-message').innerHTML = `
-                <h4 class="font-bold text-lg">${title}</h4>
-                <p class="text-sm">${message.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')}</p>
-            `;
-            
-            // Rola para a área de coaching para que o usuário veja o feedback
-            coachingArea.scrollIntoView({ behavior: 'smooth' });
-        }
-
-
-        // --- 6. Função para chamar o Assistente Virtual (Gemini API) ---
-        window.askAssistant = async function() {
-            if (!isAuthReady) {
-                alertUser("⚠️ Aguarde a autenticação antes de usar o Assistente.", "bg-yellow-100 text-yellow-700");
-                return;
+        /** Volta para a pergunta anterior */
+        window.previousQuestion = function() {
+            if (currentStep > 0) {
+                currentStep--;
+                document.getElementById('navigation-buttons').classList.remove('hidden');
+                renderQuestion(currentStep);
             }
-            
-            const queryEl = document.getElementById('assistant-query');
-            const responseEl = document.getElementById('assistant-response');
-            const query = queryEl.value.trim();
-
-            // Verifica a chave do Gemini
-            const finalGeminiKey = geminiApiKey.includes("GEMINI_API_AQUI") ? null : geminiApiKey;
-
-            if (!finalGeminiKey) {
-                document.getElementById('config-alert').classList.remove('hidden');
-                alertUser("🚨 A CHAVE GEMINI API ESTÁ AUSENTE ou é PLACEHOLDER! O Assistente IA não pode funcionar.", "bg-red-100 text-red-700");
-                return;
-            }
-
-            if (query === "") {
-                alertUser("⚠️ Por favor, digite sua pergunta.", "bg-yellow-100 text-yellow-700");
-                return;
-            }
-
-            // Mostrar estado de carregamento
-            responseEl.innerHTML = `
-                <div class="flex items-center space-x-2 text-teal-600">
-                    <svg class="animate-spin h-5 w-5 text-teal-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                    </svg>
-                    <span>Analisando seus dados e gerando dicas...</span>
+        };
+        
+        /** Exibe o estado de carregamento da IA */
+        function displayLoading() {
+            const contentArea = document.getElementById('content-area');
+            contentArea.innerHTML = `
+                <div class="text-center py-12">
+                    <div class="loading-animation w-12 h-12 border-4 border-gray-200 border-solid rounded-full mx-auto mb-4"></div>
+                    <h3 class="text-xl font-bold text-indigo-600">Analisando seu Perfil...</h3>
+                    <p class="text-gray-500 mt-2">Isto pode levar alguns segundos enquanto o Assistente IA processa suas respostas.</p>
                 </div>
             `;
-            queryEl.disabled = true;
-            document.getElementById('btn-ask-assistant').disabled = true;
+        }
 
+        /** Compila as respostas e gera a recomendação com a IA */
+        async function generateRecommendation() {
+            if (!finalGeminiKey) {
+                document.getElementById('content-area').innerHTML = `
+                    <div class="text-center py-12 text-red-700">
+                        <h3 class="text-2xl font-bold mb-4">🚨 Erro de Configuração IA 🚨</h3>
+                        <p>O resultado detalhado não pode ser gerado. Chave da API Gemini não encontrada.</p>
+                    </div>
+                `;
+                return;
+            }
 
-            // 1. Preparar o contexto de dados para a IA
-            const contextData = {
-                rendaMensal: formatCurrency(currentIncome),
-                saldoRestante: formatCurrency(currentIncome - transactionsData.reduce((sum, t) => sum + t.amount, 0)),
-                totalGastos: formatCurrency(transactionsData.reduce((sum, t) => sum + t.amount, 0)),
-                historicoTransacoes: transactionsData.map(t => 
-                    `[${t.date.substring(5, 10)}] ${formatCurrency(t.amount)} - ${t.description} (Necessidade: ${t.necessity}, Emoção: ${t.emotion})`
-                ).slice(0, 10) // Limita a 10 transações para não estourar o prompt
-            };
+            const profileSummary = summarizeProfile();
             
-            const systemPrompt = `Você é um Assistente de Economia e Consciência Financeira. Sua tarefa é analisar o contexto financeiro do usuário e sua pergunta, e fornecer dicas de economia e bem-estar financeiro PERSONALIZADAS. Fale sempre em português.
-                --- CONTEXTO FINANCEIRO DO USUÁRIO ---
-                Renda Mensal: ${contextData.rendaMensal}
-                Total Gasto neste ciclo: ${contextData.totalGastos}
-                Saldo Restante: ${contextData.saldoRestante}
-                Últimas Transações (10 mais recentes, [Data] Valor - Descrição, Emoção):
-                ${contextData.historicoTransacoes.join('\n')}
-                --- FIM DO CONTEXTO ---
+            // 1. O Prompt para a IA
+            const systemPrompt = `Você é um Analista Vocacional especializado em carreiras do futuro. Sua tarefa é analisar o perfil do usuário (baseado nas 5 perguntas) e gerar uma recomendação de carreira detalhada, inspiradora e realista. Sua resposta deve ser estruturada com as seguintes seções (usando Markdown):
+                1. **Seu Perfil Principal:** Uma análise da personalidade e motivação dominante.
+                2. **Recomendação de Carreira:** O nome da carreira mais indicada.
+                3. **Por que esta carreira?** Conecte as respostas do usuário (o perfil) com as habilidades necessárias para esta carreira.
+                4. **Primeiros Passos:** Sugira 3 ações concretas (cursos, leituras, networking) que o usuário pode tomar HOJE para explorar esta área.
+                Fale de forma positiva e motivacional, sempre em Português.
             `;
-
-            const userQuery = `Baseado no meu contexto, responda a seguinte pergunta de forma útil e encorajadora: "${query}"`;
             
-            const apiKey = finalGeminiKey || ""; // Usa a chave real ou vazia se estiver no Canvas
+            const userQuery = `Minhas respostas ao teste vocacional geraram o seguinte resumo de perfil:
+                ${profileSummary}
+                Com base neste perfil, gere a recomendação de carreira completa.
+            `;
             
-            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${finalGeminiKey}`;
 
             const payload = {
                 contents: [{ parts: [{ text: userQuery }] }],
@@ -599,11 +346,10 @@
                     
                     if (response.ok) {
                         const result = await response.json();
-                        responseText = result.candidates?.[0]?.content?.parts?.[0]?.text || "Assistente não conseguiu gerar a resposta. Tente refinar a pergunta.";
-                        break; // Sucesso, sai do loop
+                        responseText = result.candidates?.[0]?.content?.parts?.[0]?.text || "Assistente não conseguiu gerar a resposta. Tente novamente.";
+                        break;
                     } else if (response.status === 429 && i < MAX_RETRIES - 1) {
-                        // Rate limit, tenta novamente com delay
-                        const delay = Math.pow(2, i) * 1000; // 1s, 2s, 4s...
+                        const delay = Math.pow(2, i) * 1000;
                         await new Promise(resolve => setTimeout(resolve, delay));
                     } else {
                         throw new Error(`Erro de API: ${response.status} ${response.statusText}`);
@@ -611,43 +357,86 @@
                 } catch (error) {
                     console.error("Erro na chamada da API:", error);
                     responseText = "Erro de rede ou na API. Verifique sua conexão ou tente novamente.";
-                    if (i === MAX_RETRIES - 1) break; // Última tentativa falhou
+                    if (i === MAX_RETRIES - 1) break;
                 }
             }
 
-            // Exibir resposta e reativar inputs
-            responseEl.innerHTML = responseText.replace(/\n/g, '<br>');
-            queryEl.disabled = false;
-            document.getElementById('btn-ask-assistant').disabled = false;
-            queryEl.value = ''; // Limpa a query
+            // Exibir resposta no formato Markdown
+            displayResult(responseText);
         }
 
-        /** Formata um número para Real Brasileiro (BRL) */
-        function formatCurrency(num) {
-            return new Intl.NumberFormat('pt-BR', { 
-                style: 'currency', 
-                currency: 'BRL',
-                minimumFractionDigits: 2 
-            }).format(num);
+        /** Compila as respostas em um resumo para a IA */
+        function summarizeProfile() {
+            let summary = '';
+            for (const q of questions) {
+                const answerKey = userAnswers[q.id];
+                if (answerKey) {
+                    summary += `- Pergunta "${q.question}" (Resposta ${answerKey}): ${q.profile[answerKey]} - ${q.options[answerKey]}\n`;
+                }
+            }
+            return summary;
+        }
+
+        /** Renderiza o resultado final formatado */
+        function displayResult(markdownText) {
+            // Conversão básica de Markdown para HTML (apenas para títulos e listas)
+            let htmlContent = markdownText;
+            
+            // 1. Títulos (## -> h3)
+            htmlContent = htmlContent.replace(/^##\s*(.*)$/gm, '<h3 class="text-xl font-bold text-indigo-700 mt-6 mb-3">$1</h3>');
+            // 2. Títulos (* * -> strong)
+            htmlContent = htmlContent.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+            // 3. Listas (- Item)
+            htmlContent = htmlContent.replace(/^\s*-\s*(.*)$/gm, '<li class="ml-4 list-disc text-gray-700">$1</li>');
+            htmlContent = `<ul>${htmlContent}</ul>`; // Envolve tudo em uma lista para formatar
+            
+            // Título principal do resultado
+            const resultTitle = `<h2 class="text-3xl font-extrabold text-center text-indigo-900 mb-8">Seu Resultado Vocacional!</h2>`;
+
+            document.getElementById('content-area').innerHTML = `
+                ${resultTitle}
+                <div class="p-6 bg-indigo-50 rounded-lg border border-indigo-200 space-y-4">
+                    ${htmlContent}
+                </div>
+                <div class="mt-8 text-center">
+                    <button onclick="window.location.reload()" class="bg-teal-600 hover:bg-teal-700 text-white font-bold py-3 px-6 rounded-lg transition duration-200 shadow-lg">
+                        Fazer o Teste Novamente
+                    </button>
+                </div>
+            `;
         }
         
-        /** Exibe um feedback temporário (não usamos alert() devido às restrições do iframe) */
-        function alertUser(message, styleClass) {
-            // Cria um elemento de feedback simples no lugar
-            const statusEl = document.createElement('div');
-            statusEl.className = `p-3 rounded-lg mt-3 text-sm animated-entry ${styleClass}`;
-            statusEl.textContent = message;
-            
-            const formContainer = document.querySelector('.lg\\:col-span-1 > .bg-white'); // O primeiro card na coluna 1
-            formContainer.appendChild(statusEl);
+        // ===================================================================================
+        // INICIALIZAÇÃO FIRESTORE (REQUERIMENTO DO AMBIENTE CANVAS)
+        // Mesmo que este app não use Firestore, as dependências e inicialização base precisam estar presentes.
+        // ===================================================================================
+        
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged, setPersistence, browserLocalPersistence } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        
+        setLogLevel('Error'); // Mantemos logs de auth/db quietos, já que a funcionalidade principal é o quiz.
 
-            setTimeout(() => {
-                statusEl.remove();
-            }, 3000);
+        const canvasFirebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : null;
+        const canvasAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+        
+        async function initFirebase() {
+            if (canvasFirebaseConfig) {
+                const app = initializeApp(canvasFirebaseConfig);
+                const auth = getAuth(app);
+                const db = getFirestore(app);
+
+                await setPersistence(auth, browserLocalPersistence);
+
+                if (canvasAuthToken) {
+                    await signInWithCustomToken(auth, canvasAuthToken);
+                } else {
+                    await signInAnonymously(auth);
+                }
+            }
         }
-
-        // Inicia o App
-        initFirebaseAndAuth();
+        initFirebase(); 
+        // FIM DA INICIALIZAÇÃO FIRESTORE
     </script>
 </body>
 </html>
