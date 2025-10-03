@@ -60,7 +60,7 @@
     <!-- Área Principal do Quiz -->
     <main class="flex-grow max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10 flex items-start justify-center">
 
-        <div id="quiz-container" class="bg-white p-8 rounded-xl card-shadow w-full max-w-2xl">
+        <div id="quiz-container" class="bg-white p-4 sm:p-8 rounded-xl card-shadow w-full max-w-2xl">
             
             <!-- Progress Bar -->
             <div class="mb-6">
@@ -302,34 +302,18 @@
                     <div class="text-center py-12 text-red-700">
                         <h3 class="text-2xl font-bold mb-4">🚨 Aviso de API 🚨</h3>
                         <p>O resultado detalhado só pode ser gerado em um ambiente configurado com as credenciais da API Gemini.</p>
-                        <p class="mt-4 text-sm text-gray-600">Exibindo um resultado de exemplo.</p>
+                        <p class="mt-4 text-sm text-gray-600">Exibindo um resultado de exemplo (foco em Profissão e Motivo).</p>
                     </div>
                 `;
                 // Se não estiver no ambiente, exibe um resultado simulado para não quebrar.
                 const exampleResult = `
-                    ## Seu Perfil Principal: O Arquiteto Metódico
-                    
-                    Sua análise indica uma forte inclinação para o **pensamento lógico** e a **excelência técnica**. Você prospera em ambientes onde a concentração é valorizada e onde você pode quebrar problemas complexos em soluções estruturadas. A busca por sistemas que funcionam perfeitamente e a paixão por áreas exatas (cálculo e algoritmos) definem sua bússola vocacional. Você valoriza o sucesso através da excelência e da criação de tecnologias eficientes.
+                    ## Profissão Recomendada:
+                    **Designer de Experiência do Usuário (UX Designer)**
 
                     ---
                     
-                    ## Recomendação de Carreira: Engenheiro de Software Sênior (Foco em Backend/Data)
-                    
-                    ---
-
-                    ## Por que esta carreira?
-                    Esta função combina sua natureza **Metódica** e **Focada** com a necessidade de **Excelência** na construção de sistemas.
-                    * A preferência por **Analisar dados e construir sistemas** (Q1, Q5) alinha-se diretamente com o desenvolvimento de infraestrutura robusta.
-                    * A inclinação para **Cálculo avançado e algoritmos** (Q3) é a fundação para o sucesso na programação.
-                    * Seu modo de reagir aos desafios, **quebrando-os em partes menores** (Q4), é a essência da depuração e design de software.
-
-                    ---
-
-                    ## Primeiros Passos:
-                    
-                    1.  **Curso Online de Estruturas de Dados e Algoritmos:** Domine as bases teóricas que diferenciam um bom engenheiro de um ótimo. Plataformas como Coursera ou EdX oferecem trilhas excelentes.
-                    2.  **Desenvolvimento de um Projeto Próprio:** Comece a construir um projeto pessoal (ex: uma API simples ou um script de análise de dados) usando uma linguagem como Python ou JavaScript para aplicar seus conhecimentos.
-                    3.  **Leitura Essencial:** Procure pelo livro "Código Limpo" (Clean Code) de Robert C. Martin. É a bíblia para quem busca a excelência e organização em sistemas de software.
+                    ## Motivo da Recomendação:
+                    Seu perfil demonstrou forte inclinação para a **Criação** (Q1, Q3) e foco em como os problemas **afetam as pessoas** (Q4). O UX Design combina sua paixão por **Design** e **Liberdade Criativa** (Q5) com a necessidade de **Empatia** para criar produtos digitais intuitivos e úteis.
                 `;
                 displayResult(exampleResult);
                 return;
@@ -339,28 +323,15 @@
             const profileSummary = summarizeProfile();
             
             // 1. O Prompt para a IA
-            const systemPrompt = `Você é um Analista Vocacional especializado em carreiras do futuro. Sua tarefa é analisar o perfil do usuário (baseado nas 5 perguntas) e gerar uma recomendação de carreira detalhada, inspiradora e realista. Sua resposta deve ser estruturada com as seguintes seções (usando Markdown):
-                
-                1. **Seu Perfil Principal:** Uma análise da personalidade e motivação dominante.
-                
-                ---
-                
-                2. **Recomendação de Carreira:** O nome da carreira mais indicada.
-                
-                ---
-
-                3. **Por que esta carreira?** Conecte as respostas do usuário (o perfil) com as habilidades necessárias para esta carreira.
-                
-                ---
-                
-                4. **Primeiros Passos:** Sugira 3 ações concretas (cursos, leituras, networking) que o usuário pode tomar HOJE para explorar esta área.
-                
-                Fale de forma positiva e motivacional, sempre em Português.
-            `;
+            // NOVO PROMPT: Focado APENAS na Profissão e Motivo.
+            const systemPrompt = `Você é um Analista Vocacional especializado. Analise o perfil do usuário e gere uma resposta concisa, contendo APENAS duas seções obrigatórias no formato Markdown:
+1. **Profissão Recomendada:** O nome da carreira mais indicada para o perfil.
+2. **Motivo da Recomendação:** Uma explicação breve e direta de por que esta carreira se alinha com as características do perfil.
+Mantenha a resposta focada, inspiradora e em Português. Não adicione introduções, conclusões ou passos extras.`;
             
             const userQuery = `Minhas respostas ao teste vocacional geraram o seguinte resumo de perfil:
                 ${profileSummary}
-                Com base neste perfil, gere a recomendação de carreira completa.
+                Com base neste perfil, gere a recomendação de carreira.
             `;
             
             const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${finalGeminiKey}`;
@@ -430,8 +401,7 @@
             // 3. Negrito (**texto** -> strong)
             htmlContent = htmlContent.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
             
-            // 4. Listas (- Item)
-            // Primeiro, converte as listas em HTML
+            // 4. Listas (- Item) - simplificando o processo de conversão
             htmlContent = htmlContent.split('\n').map(line => {
                 if (line.trim().startsWith('- ')) {
                     return `<li class="ml-4 list-disc text-gray-700">${line.substring(line.indexOf('- ') + 2)}</li>`;
@@ -439,11 +409,9 @@
                 return line;
             }).join('\n');
 
-            // Envolve blocos de lista onde for apropriado (lógica simplificada)
-            htmlContent = htmlContent.replace(/<\/li>\n<li/g, '</li><li'); // Remove quebras de linha entre itens
-            htmlContent = htmlContent.replace(/(^|\n)(<li.*<\/li>)/g, (match, p1, p2) => p1 + `<ul>${p2}</ul>`); // Envolve em <ul>
-
-            // Remove tags <ul> e </ul> em excesso/erradas (simplificando)
+            // Envolve blocos de lista onde for apropriado
+            htmlContent = htmlContent.replace(/<\/li>\n<li/g, '</li><li'); 
+            htmlContent = htmlContent.replace(/(^|\n)(<li.*<\/li>)/g, (match, p1, p2) => p1 + `<ul>${p2}</ul>`);
             htmlContent = htmlContent.replace(/<\/ul>\s*<ul>/g, ''); 
             
             // Remove linhas vazias
