@@ -4,178 +4,197 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Teste Vocacional IA: Descubra Seu Caminho</title>
-    <!-- Carrega Tailwind CSS para estilização -->
+    <!-- Carrega Tailwind CSS para estilização e modernidade -->
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
+        /* Importa a fonte Inter para um visual moderno */
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+        
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #f0f4f8; /* Fundo leve */
+            background-color: #f7fafc; /* Fundo muito claro, quase branco */
             min-height: 100vh;
             display: flex;
             flex-direction: column;
+            color: #1f2937; /* Cinza escuro para melhor contraste */
         }
+        
         .text-gradient {
-            background-image: linear-gradient(to right, #4c51bf, #6b46c1); /* Roxo/Índigo inspirador */
+            /* Gradiente moderno: Indigo para Teal */
+            background-image: linear-gradient(to right, #4338ca, #10b981); 
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
+        
         .card-shadow {
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            /* Sombra mais pronunciada para um efeito de profundidade */
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
         }
+        
         .quiz-option {
             transition: all 0.2s ease;
             cursor: pointer;
+            border-color: #e5e7eb; /* Gray 200 */
         }
+        
         .quiz-option:hover {
-            background-color: #e0e7ff; /* Indigo 100 */
-            transform: translateY(-1px);
+            background-color: #f0fdf4; /* Teal 50 hover leve */
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
         }
+        
         .quiz-option.selected {
-            border-color: #4c51bf; /* Indigo 600 */
-            background-color: #c3dafe; /* Indigo 200 */
+            border-color: #10b981; /* Teal 500 */
+            background-color: #e0f2f1; /* Teal 100 */
             font-weight: 600;
         }
+        
         .loading-animation {
-            border-top-color: #4c51bf;
+            border-top-color: #10b981; /* Cor Teal para o spinner */
             animation: spin 1s ease-in-out infinite;
         }
+        
         @keyframes spin {
             to { transform: rotate(360deg); }
+        }
+        
+        /* Estilo para ícones SVG inline (o que foi usado no header) */
+        .lucide-icon {
+            display: inline-block;
+            vertical-align: middle;
         }
     </style>
 </head>
 <body class="text-gray-800">
 
-    <!-- Cabeçalho -->
+    <!-- Cabeçalho Fixo e Moderno -->
     <header class="bg-white shadow-lg sticky top-0 z-50">
-        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-            <h1 class="text-3xl font-extrabold text-gradient text-center">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-5">
+            <h1 class="text-3xl font-extrabold text-gradient text-center flex items-center justify-center">
+                <!-- Ícone de Bússola (SVG) para dar um toque visual -->
+                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon mr-3 text-indigo-600">
+                    <circle cx="12" cy="12" r="10"/><path d="m16 8-2 8-8 2 2-8 8-2z"/>
+                </svg>
                 Descubra Seu Caminho - Teste Vocacional IA
             </h1>
-            <p class="text-center text-sm text-gray-500 mt-1">5 Perguntas para um futuro mais claro.</p>
+            <p class="text-center text-sm text-gray-500 mt-1">Sua bússola de carreira em 5 passos.</p>
         </div>
     </header>
 
-    <!-- Área Principal do Quiz -->
+    <!-- Área Principal do Quiz: Centralizada e Responsiva -->
     <main class="flex-grow max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10 flex items-start justify-center">
 
-        <div id="quiz-container" class="bg-white p-4 sm:p-8 rounded-xl card-shadow w-full max-w-2xl">
+        <div id="quiz-container" class="bg-white p-6 sm:p-10 rounded-3xl card-shadow w-full max-w-3xl">
             
-            <!-- Progress Bar -->
-            <div class="mb-6">
-                <div class="text-sm font-medium text-indigo-600 mb-2">
-                    <span id="progress-text">Pergunta 1 de 5</span>
+            <!-- Progress Bar Aprimorada -->
+            <div class="mb-8">
+                <div class="text-sm font-medium text-teal-600 mb-2 flex justify-between items-center">
+                    <span>Progresso</span>
+                    <span id="progress-text" class="font-bold">Pergunta 1 de 5</span>
                 </div>
-                <div class="w-full bg-gray-200 rounded-full h-2.5">
-                    <div id="progress-bar" class="bg-indigo-600 h-2.5 rounded-full transition-all duration-500" style="width: 0%"></div>
+                <div class="w-full bg-gray-200 rounded-full h-3">
+                    <!-- Progress Bar com cor Teal -->
+                    <div id="progress-bar" class="bg-teal-500 h-3 rounded-full transition-all duration-500" style="width: 0%"></div>
                 </div>
             </div>
 
             <!-- Conteúdo do Quiz/Resultado -->
             <div id="content-area">
-                <!-- O conteúdo (perguntas ou resultado) será injetado aqui pelo JS -->
                 <p class="text-center text-gray-500">Iniciando teste...</p>
             </div>
 
-            <!-- Botões de Navegação -->
-            <div id="navigation-buttons" class="mt-8 flex justify-between">
-                <button id="btn-back" onclick="previousQuestion()" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold py-2 px-4 rounded-lg transition duration-200 shadow-md disabled:opacity-50" disabled>
-                    Voltar
+            <!-- Botões de Navegação com ícones e cantos arredondados -->
+            <div id="navigation-buttons" class="mt-10 flex justify-between">
+                <button id="btn-back" onclick="previousQuestion()" class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold py-3 px-6 rounded-full transition duration-300 disabled:opacity-50 disabled:cursor-not-allowed">
+                    <span class="mr-2">&larr;</span> Voltar
                 </button>
-                <button id="btn-next" onclick="nextQuestion()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded-lg transition duration-200 shadow-lg disabled:opacity-50" disabled>
-                    Próxima Pergunta
+                <button id="btn-next" onclick="nextQuestion()" class="bg-indigo-600 hover:bg-teal-500 text-white font-bold py-3 px-6 rounded-full transition duration-300 shadow-xl shadow-indigo-200 disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+                    Próxima Pergunta <span class="ml-2">&rarr;</span>
                 </button>
             </div>
 
         </div>
     </main>
 
-    <footer class="bg-white mt-auto py-4 text-center text-xs text-gray-500 shadow-inner">
+    <!-- Rodapé Simples -->
+    <footer class="bg-white mt-auto py-4 text-center text-xs text-gray-500 shadow-inner border-t border-gray-100">
         Desenvolvido com Consciência e Gemini API para análise vocacional.
     </footer>
 
 
     <script type="module">
         // ===================================================================================
-        // CONFIGURAÇÃO DA API (CRÍTICO PARA FUNCIONAMENTO)
+        // CONFIGURAÇÃO DA API E DADOS
         // ===================================================================================
 
-        // Variáveis fornecidas pelo ambiente Canvas
+        // Variáveis globais do ambiente Canvas
         const canvasAppId = typeof __app_id !== 'undefined' ? __app_id : null;
-        
-        // A chave da API Gemini é deixada vazia ("") para que o ambiente Canvas injete a credencial
-        // automaticamente durante a execução.
-        const finalGeminiKey = canvasAppId ? "" : ""; 
-
-        // ===================================================================================
-        // DADOS E ESTADO DO QUIZ
-        // ===================================================================================
+        const finalGeminiKey = canvasAppId ? "" : ""; // Deixada vazia para injeção de credencial
 
         let currentStep = 0;
         let userAnswers = {}; // { 'q1': 'A', 'q2': 'C', ... }
         let totalQuestions = 0;
 
+        // Perguntas focadas em áreas de carreira modernas (Tech, Social, Criação)
         const questions = [
             {
                 id: 'q1',
                 question: "O que te dá mais energia e satisfação no dia a dia?",
                 options: {
-                    A: "Interagir e colaborar com muitas pessoas, resolvendo conflitos ou motivando.",
-                    B: "Analisar dados, encontrar padrões, construir sistemas ou resolver problemas técnicos complexos.",
-                    C: "Criar algo do zero, seja um produto físico, uma obra de arte ou um design digital.",
-                    D: "Ajudar diretamente indivíduos ou comunidades a melhorar suas vidas, focando no bem-estar."
+                    A: "Interagir e colaborar com muitas pessoas, resolvendo conflitos ou motivando-as.",
+                    B: "Analisar dados, encontrar padrões e construir sistemas lógicos e eficientes.",
+                    C: "Criar algo do zero (design, arte, protótipo) ou expressar ideias visualmente.",
+                    D: "Ajudar diretamente indivíduos ou comunidades a melhorar suas vidas e bem-estar."
                 },
-                profile: { A: 'Social', B: 'Lógico', C: 'Criativo', D: 'Empático' }
+                profile: { A: 'Social-Comunicação', B: 'Lógico-Analítico', C: 'Criativo-Visual', D: 'Empático-Serviço' }
             },
             {
                 id: 'q2',
-                question: "Qual ambiente de trabalho é o mais atraente para você?",
+                question: "Qual tipo de desafio você prefere estudar ou dominar?",
                 options: {
-                    A: "Um escritório movimentado, com reuniões constantes e troca de ideias.",
-                    B: "Um local tranquilo, como casa ou laboratório, onde a concentração profunda é prioridade.",
-                    C: "Um estúdio, oficina ou campo, onde você possa ver o resultado físico do seu trabalho.",
-                    D: "Um local que exige muita escuta, como um consultório, sala de aula ou centro comunitário."
+                    A: "Técnicas de persuasão, marketing, negociação e gestão de equipes.",
+                    B: "Cálculo avançado, programação, ciência de dados e desenvolvimento de algoritmos.",
+                    C: "Design de interfaces (UI/UX), arquitetura ou composição musical e cinematográfica.",
+                    D: "Psicologia humana, gestão de crises emocionais ou técnicas de saúde e nutrição."
                 },
-                profile: { A: 'Dinâmico', B: 'Focado', C: 'Tangível', D: 'Atendimento' }
+                profile: { A: 'Estratégico-Liderança', B: 'Tecnológico-Exatas', C: 'Artístico-Inovação', D: 'Humanas-Cuidado' }
             },
             {
                 id: 'q3',
-                question: "Qual das seguintes atividades você preferiria estudar ou dominar?",
+                question: "Ao enfrentar um problema complexo, qual é sua reação inicial?",
                 options: {
-                    A: "Técnicas de persuasão, marketing e oratória.",
-                    B: "Cálculo avançado, programação e desenvolvimento de algoritmos.",
-                    C: "Design de interfaces (UI/UX), escrita criativa ou composição musical.",
-                    D: "Psicologia humana, gestão de crises ou técnicas de saúde e bem-estar."
+                    A: "Organizo imediatamente uma reunião com stakeholders para alinhar a estratégia de ataque.",
+                    B: "Me isolo, quebro o problema em variáveis e busco a solução mais lógica e 'bug-free'.",
+                    C: "Rascunho várias abordagens não-convencionais e escolho a mais original e impactante.",
+                    D: "Busco entender como o problema afeta as pessoas envolvidas para propor uma solução justa e centrada no ser humano."
                 },
-                profile: { A: 'Comunicação', B: 'Exatas', C: 'Artes', D: 'Humanas' }
+                profile: { A: 'Coordenador-Dinâmico', B: 'Metódico-Focado', C: 'Visionário-Disruptivo', D: 'Colaborativo-Comunitário' }
             },
             {
                 id: 'q4',
-                question: "Ao enfrentar um desafio, qual é sua reação mais natural?",
+                question: "Qual ambiente de trabalho te motiva mais?",
                 options: {
-                    A: "Organizo uma equipe e delego tarefas, focando em coordenar a solução.",
-                    B: "Quebro o problema em partes menores e busco a causa raiz com lógica e método.",
-                    C: "Busco formas não-convencionais de resolver, tentando abordagens inesperadas.",
-                    D: "Me concentro em como o problema afeta as pessoas envolvidas, buscando uma solução justa e equilibrada."
+                    A: "Um escritório movimentado, com interação constante, prazos apertados e foco em resultados de vendas/gestão.",
+                    B: "Um laboratório, data center ou casa, onde a concentração profunda em dados ou códigos é essencial.",
+                    C: "Um estúdio, oficina ou campo, onde você pode manipular materiais ou interfaces para ver o resultado tangível.",
+                    D: "Um local que exige escuta ativa, como um consultório, centro de ensino ou campo de serviço social."
                 },
-                profile: { A: 'Liderança', B: 'Metódico', C: 'Inovador', D: 'Colaborativo' }
+                profile: { A: 'Executivo-Pressão', B: 'Científico-Preciso', C: 'Prático-Estúdio', D: 'Atendimento-Escuta' }
             },
             {
                 id: 'q5',
-                question: "O que significa 'sucesso' em uma carreira para você?",
+                question: "Para você, o que define 'sucesso' em uma carreira?",
                 options: {
-                    A: "Ter uma grande rede de contatos e ser reconhecido como líder no meu campo.",
-                    B: "Criar um sistema ou tecnologia que funcione perfeitamente e mude a forma como fazemos algo.",
-                    C: "Expressar minha visão de mundo através do meu trabalho e ter liberdade criativa.",
-                    D: "Deixar um impacto positivo claro na sociedade, na vida de outras pessoas ou no planeta."
+                    A: "Ter influência, liderar grandes projetos ou equipes e ser reconhecido publicamente no meu campo.",
+                    B: "Criar um sistema ou tecnologia que funcione perfeitamente, garantindo excelência e eficiência.",
+                    C: "Ter liberdade criativa total para expressar minha visão de mundo e deixar uma marca única.",
+                    D: "Deixar um impacto positivo claro na vida de outras pessoas ou na sociedade, focando no propósito."
                 },
-                profile: { A: 'Influência', B: 'Excelência', C: 'Liberdade', D: 'Propósito' }
+                profile: { A: 'Influência-Status', B: 'Excelência-Funcional', C: 'Liberdade-Expressão', D: 'Propósito-Impacto' }
             }
         ];
 
         totalQuestions = questions.length;
-
 
         // ===================================================================================
         // LÓGICA DO QUIZ
@@ -193,12 +212,12 @@
             const progressText = document.getElementById('progress-text');
             const progressBar = document.getElementById('progress-bar');
 
-            // Atualiza o progresso
-            const progressPercent = ((step) / totalQuestions) * 100;
+            // Atualiza o progresso visual
+            const progressPercent = ((step + 1) / totalQuestions) * 100;
             progressBar.style.width = `${progressPercent}%`;
             progressText.textContent = `Pergunta ${step + 1} de ${totalQuestions}`;
             
-            // Lógica dos Botões
+            // Lógica dos Botões de Navegação
             btnBack.disabled = step === 0;
             btnNext.textContent = (step === totalQuestions - 1) ? 'Ver Resultado' : 'Próxima Pergunta';
             
@@ -213,9 +232,12 @@
             
             // HTML da Pergunta
             let questionHtml = `
-                <h3 class="text-xl font-bold text-gray-700 mb-6">
-                    ${currentQuestion.question}
-                </h3>
+                <div class="mb-6">
+                    <p class="text-sm font-semibold text-teal-600 mb-1">Passo ${step + 1}</p>
+                    <h3 class="text-2xl font-bold text-gray-800">
+                        ${currentQuestion.question}
+                    </h3>
+                </div>
                 <div id="options-container" class="space-y-4">
             `;
 
@@ -224,11 +246,12 @@
                 const isSelected = userAnswers[currentQuestion.id] === key;
                 questionHtml += `
                     <div 
-                        class="quiz-option p-4 border-2 border-gray-200 rounded-lg ${isSelected ? 'selected' : ''}" 
+                        class="quiz-option p-4 border-2 rounded-xl text-lg ${isSelected ? 'selected' : ''}" 
                         onclick="selectAnswer('${currentQuestion.id}', '${key}')"
                         data-answer="${key}"
                     >
-                        <span class="font-semibold text-indigo-700">${key}:</span> ${currentQuestion.options[key]}
+                        <span class="font-bold text-indigo-700 w-8 inline-block">${key}.</span> 
+                        <span class="ml-2">${currentQuestion.options[key]}</span>
                     </div>
                 `;
             }
@@ -278,42 +301,49 @@
             }
         };
         
-        /** Exibe o estado de carregamento da IA */
+        /** Exibe o estado de carregamento da IA com novo design */
         function displayLoading() {
             const contentArea = document.getElementById('content-area');
             contentArea.innerHTML = `
-                <div class="text-center py-12">
-                    <div class="loading-animation w-12 h-12 border-4 border-gray-200 border-solid rounded-full mx-auto mb-4"></div>
-                    <h3 class="text-xl font-bold text-indigo-600">Analisando seu Perfil...</h3>
-                    <p class="text-gray-500 mt-2">Isto pode levar alguns segundos enquanto o Assistente IA processa suas respostas.</p>
+                <div class="text-center py-16">
+                    <div class="loading-animation w-16 h-16 border-4 border-gray-200 border-solid rounded-full mx-auto mb-6"></div>
+                    <h3 class="text-2xl font-bold text-indigo-600">🧠 Processando Respostas...</h3>
+                    <p class="text-gray-500 mt-2">Nossa Inteligência Artificial está analisando seu perfil único. Aguarde um momento.</p>
                 </div>
             `;
         }
 
+        /** Compila as respostas em um resumo para a IA */
+        function summarizeProfile() {
+            let summary = 'Respostas Detalhadas e Perfis Associados:\n';
+            for (const q of questions) {
+                const answerKey = userAnswers[q.id];
+                if (answerKey) {
+                    // Compila o perfil e a descrição da resposta para melhor análise da IA.
+                    summary += `- Pergunta "${q.question}" (Resposta ${answerKey}): Foco do Perfil: ${q.profile[answerKey]}. Conteúdo da resposta: "${q.options[answerKey]}".\n`;
+                }
+            }
+            return summary;
+        }
+
+
         /** Compila as respostas e gera a recomendação com a IA */
         async function generateRecommendation() {
-            if (!finalGeminiKey && canvasAppId) {
-                // Este check é principalmente para garantir que a chave foi injetada pelo ambiente
-                // No Canvas, finalGeminiKey será "", mas a credencial é injetada no fetch.
-            }
-
             if (!canvasAppId) {
                  document.getElementById('content-area').innerHTML = `
-                    <div class="text-center py-12 text-red-700">
+                    <div class="text-center py-12 bg-red-50 rounded-lg p-6 border border-red-200 text-red-700">
                         <h3 class="text-2xl font-bold mb-4">🚨 Aviso de API 🚨</h3>
                         <p>O resultado detalhado só pode ser gerado em um ambiente configurado com as credenciais da API Gemini.</p>
-                        <p class="mt-4 text-sm text-gray-600">Exibindo um resultado de exemplo (foco em Profissão e Motivo).</p>
+                        <p class="mt-4 text-sm text-gray-600">Exibindo um resultado de exemplo.</p>
                     </div>
                 `;
-                // Se não estiver no ambiente, exibe um resultado simulado para não quebrar.
+                // Resultado simulado para o ambiente sem Canvas/API
                 const exampleResult = `
                     ## Profissão Recomendada:
-                    **Designer de Experiência do Usuário (UX Designer)**
+                    **Especialista em Desenvolvimento de Software (Full Stack)**
 
-                    ---
-                    
                     ## Motivo da Recomendação:
-                    Seu perfil demonstrou forte inclinação para a **Criação** (Q1, Q3) e foco em como os problemas **afetam as pessoas** (Q4). O UX Design combina sua paixão por **Design** e **Liberdade Criativa** (Q5) com a necessidade de **Empatia** para criar produtos digitais intuitivos e úteis.
+                    Seu perfil demonstrou forte inclinação para o **Lógico-Analítico** (Q1, Q2) e foco em **Excelência Funcional** (Q5). Esta carreira combina a necessidade de **Metódico-Focado** (Q3, Q4) com a criação de sistemas eficientes, satisfazendo sua busca por **Excelência** e resolução de problemas técnicos complexos.
                 `;
                 displayResult(exampleResult);
                 return;
@@ -323,11 +353,10 @@
             const profileSummary = summarizeProfile();
             
             // 1. O Prompt para a IA
-            // NOVO PROMPT: Focado APENAS na Profissão e Motivo.
-            const systemPrompt = `Você é um Analista Vocacional especializado. Analise o perfil do usuário e gere uma resposta concisa, contendo APENAS duas seções obrigatórias no formato Markdown:
-1. **Profissão Recomendada:** O nome da carreira mais indicada para o perfil.
-2. **Motivo da Recomendação:** Uma explicação breve e direta de por que esta carreira se alinha com as características do perfil.
-Mantenha a resposta focada, inspiradora e em Português. Não adicione introduções, conclusões ou passos extras.`;
+            const systemPrompt = `Você é um Analista Vocacional especializado em carreiras do século 21. Analise o perfil do usuário e gere uma resposta concisa, contendo APENAS duas seções obrigatórias no formato Markdown, sem introduções, conclusões ou textos adicionais:
+1. **Profissão Recomendada:** O nome da carreira mais indicada, focando em áreas como Tecnologia, Dados, Design (UX), Sustentabilidade ou Gestão.
+2. **Motivo da Recomendação:** Uma explicação de no máximo 3 frases, destacando como esta carreira se alinha com as palavras-chave do perfil (e.g., Lógico-Analítico, Criativo-Visual, Propósito-Impacto).
+Mantenha a resposta inspiradora e em Português.`;
             
             const userQuery = `Minhas respostas ao teste vocacional geraram o seguinte resumo de perfil:
                 ${profileSummary}
@@ -374,60 +403,54 @@ Mantenha a resposta focada, inspiradora e em Português. Não adicione introduç
             displayResult(responseText);
         }
 
-        /** Compila as respostas em um resumo para a IA */
-        function summarizeProfile() {
-            let summary = 'Respostas Detalhadas:\n';
-            for (const q of questions) {
-                const answerKey = userAnswers[q.id];
-                if (answerKey) {
-                    // Adiciona o perfil (e.g., Lógico, Criativo) e a descrição da resposta.
-                    summary += `- Pergunta "${q.question}" (Resposta ${answerKey}): Perfil dominante: ${q.profile[answerKey]}. Conteúdo: ${q.options[answerKey]}\n`;
+        /** Renderiza o resultado final formatado, focando na Profissão e Motivo. */
+        function displayResult(markdownText) {
+            // Remove quebras de linha desnecessárias e trata negrito
+            let cleanText = markdownText.trim();
+            cleanText = cleanText.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+            
+            // Tenta isolar as duas seções principais conforme instruído no prompt da IA
+            const parts = cleanText.split(/^##\s*(Profissão Recomendada|Motivo da Recomendação):\s*$/gm).filter(p => p.trim() !== '');
+
+            let professionHtml = 'Não Encontrada';
+            let reasonHtml = 'Não Encontrado';
+
+            for (let i = 0; i < parts.length; i += 2) {
+                const sectionTitle = parts[i].trim();
+                const sectionContent = (parts[i+1] || '').trim();
+
+                if (sectionTitle.includes("Profissão")) {
+                    professionHtml = sectionContent.replace(/\n/g, '<br>');
+                } else if (sectionTitle.includes("Motivo")) {
+                    reasonHtml = sectionContent.replace(/\n/g, '<br>');
                 }
             }
-            return summary;
-        }
-
-        /** Renderiza o resultado final formatado */
-        function displayResult(markdownText) {
-            // Conversão básica de Markdown para HTML (para títulos, listas e negrito)
-            let htmlContent = markdownText;
             
-            // 1. Linhas horizontais (---) para espaçamento
-            htmlContent = htmlContent.replace(/^---\s*$/gm, '<hr class="my-6 border-indigo-200">');
-            
-            // 2. Títulos (## -> h3)
-            htmlContent = htmlContent.replace(/^##\s*(.*)$/gm, '<h3 class="text-xl font-bold text-indigo-700 mt-6 mb-3">$1</h3>');
-            
-            // 3. Negrito (**texto** -> strong)
-            htmlContent = htmlContent.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-            
-            // 4. Listas (- Item) - simplificando o processo de conversão
-            htmlContent = htmlContent.split('\n').map(line => {
-                if (line.trim().startsWith('- ')) {
-                    return `<li class="ml-4 list-disc text-gray-700">${line.substring(line.indexOf('- ') + 2)}</li>`;
-                }
-                return line;
-            }).join('\n');
-
-            // Envolve blocos de lista onde for apropriado
-            htmlContent = htmlContent.replace(/<\/li>\n<li/g, '</li><li'); 
-            htmlContent = htmlContent.replace(/(^|\n)(<li.*<\/li>)/g, (match, p1, p2) => p1 + `<ul>${p2}</ul>`);
-            htmlContent = htmlContent.replace(/<\/ul>\s*<ul>/g, ''); 
-            
-            // Remove linhas vazias
-            htmlContent = htmlContent.replace(/\n{2,}/g, '\n');
-
-
             // Título principal do resultado
-            const resultTitle = `<h2 class="text-3xl font-extrabold text-center text-indigo-900 mb-8">Seu Resultado Vocacional!</h2>`;
+            const resultTitle = `<h2 class="text-4xl font-extrabold text-center text-indigo-800 mb-8">🎯 Seu Resultado Vocacional!</h2>`;
 
             document.getElementById('content-area').innerHTML = `
                 ${resultTitle}
-                <div class="p-6 bg-indigo-50 rounded-xl border border-indigo-200 space-y-4 text-left">
-                    ${htmlContent}
+                
+                <div class="space-y-6">
+                    
+                    <!-- Bloco de Destaque da Profissão -->
+                    <div class="p-6 sm:p-8 bg-teal-50 rounded-2xl border-4 border-teal-300 shadow-lg">
+                        <p class="text-sm font-semibold text-teal-700 mb-1">PROFISSÃO RECOMENDADA</p>
+                        <div class="text-3xl sm:text-4xl font-extrabold text-indigo-700 leading-tight">${professionHtml}</div>
+                    </div>
+
+                    <!-- Bloco de Detalhe do Motivo -->
+                    <div class="p-6 sm:p-8 bg-gray-50 rounded-2xl border border-gray-200">
+                        <p class="text-lg font-semibold text-gray-700 mb-3">Motivo da Recomendação</p>
+                        <p class="text-gray-600 leading-relaxed">${reasonHtml}</p>
+                    </div>
+
                 </div>
-                <div class="mt-8 text-center">
-                    <button onclick="window.location.reload()" class="bg-teal-600 hover:bg-teal-700 text-white font-bold py-3 px-6 rounded-lg transition duration-200 shadow-lg">
+
+                <!-- Botão de Ação Final -->
+                <div class="mt-10 text-center">
+                    <button onclick="window.location.reload()" class="bg-teal-600 hover:bg-teal-700 text-white font-bold py-3 px-8 rounded-full transition duration-300 shadow-xl shadow-teal-200 text-lg">
                         Fazer o Teste Novamente
                     </button>
                 </div>
@@ -435,15 +458,15 @@ Mantenha a resposta focada, inspiradora e em Português. Não adicione introduç
         }
         
         // ===================================================================================
-        // INICIALIZAÇÃO FIRESTORE (BOILERPLATE DO AMBIENTE)
-        // O app não usa persistência, mas esta seção é necessária para o ambiente Canvas.
+        // INICIALIZAÇÃO FIRESTORE (BOILERPLATE OBRIGATÓRIO PARA O AMBIENTE CANVAS)
+        // O app não usa persistência, mas esta seção é necessária para o ambiente.
         // ===================================================================================
         
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged, setPersistence, browserLocalPersistence } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, setPersistence, browserLocalPersistence } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
         
-        setLogLevel('Error'); 
+        setLogLevel('Error'); // Reduz o log do Firestore para evitar poluição no console
 
         const canvasFirebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : null;
         const canvasAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
@@ -452,7 +475,8 @@ Mantenha a resposta focada, inspiradora e em Português. Não adicione introduç
             if (canvasFirebaseConfig) {
                 const app = initializeApp(canvasFirebaseConfig);
                 const auth = getAuth(app);
-                const db = getFirestore(app);
+                // Não precisamos do db, mas o setup de auth é crucial
+                getFirestore(app); 
 
                 await setPersistence(auth, browserLocalPersistence);
 
@@ -468,3 +492,4 @@ Mantenha a resposta focada, inspiradora e em Português. Não adicione introduç
     </script>
 </body>
 </html>
+
