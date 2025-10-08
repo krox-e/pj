@@ -58,7 +58,7 @@
             to { transform: rotate(360deg); }
         }
         
-        /* Estilo para ícones SVG inline (o que foi usado no header) */
+        /* Estilo para ícones SVG inline */
         .lucide-icon {
             display: inline-block;
             vertical-align: middle;
@@ -341,9 +341,9 @@
                 const exampleResult = `
                     ## Profissão Recomendada:
                     **Especialista em Desenvolvimento de Software (Full Stack)**
-
+                    
                     ## Motivo da Recomendação:
-                    Seu perfil demonstrou forte inclinação para o **Lógico-Analítico** (Q1, Q2) e foco em **Excelência Funcional** (Q5). Esta carreira combina a necessidade de **Metódico-Focado** (Q3, Q4) com a criação de sistemas eficientes, satisfazendo sua busca por **Excelência** e resolução de problemas técnicos complexos.
+                    Seu perfil demonstrou forte inclinação para o **Lógico-Analítico** (Q1, Q2) e foco em **Excelência Funcional** (Q5). Esta carreira combina a necessidade de **Metódico-Focado** (Q3, Q4) com a criação de sistemas eficientes.
                 `;
                 displayResult(exampleResult);
                 return;
@@ -409,21 +409,20 @@ Mantenha a resposta inspiradora e em Português.`;
             let cleanText = markdownText.trim();
             cleanText = cleanText.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
             
-            // Tenta isolar as duas seções principais conforme instruído no prompt da IA
-            const parts = cleanText.split(/^##\s*(Profissão Recomendada|Motivo da Recomendação):\s*$/gm).filter(p => p.trim() !== '');
+            let professionHtml = 'Análise em progresso...';
+            let reasonHtml = 'Análise em progresso...';
 
-            let professionHtml = 'Não Encontrada';
-            let reasonHtml = 'Não Encontrado';
+            // NOVO REGEX: Extrai a Profissão (texto que segue "## Profissão Recomendada:" até o próximo título ou fim)
+            const professionMatch = cleanText.match(/## Profissão Recomendada:\s*([\s\S]*?)(?=\n## Motivo da Recomendação:|$)/i);
+            if (professionMatch && professionMatch[1]) {
+                professionHtml = professionMatch[1].trim().replace(/\n/g, '<br>');
+            }
 
-            for (let i = 0; i < parts.length; i += 2) {
-                const sectionTitle = parts[i].trim();
-                const sectionContent = (parts[i+1] || '').trim();
-
-                if (sectionTitle.includes("Profissão")) {
-                    professionHtml = sectionContent.replace(/\n/g, '<br>');
-                } else if (sectionTitle.includes("Motivo")) {
-                    reasonHtml = sectionContent.replace(/\n/g, '<br>');
-                }
+            // NOVO REGEX: Extrai o Motivo (texto que segue "## Motivo da Recomendação:" até o próximo título ou fim)
+            // Isso garante que o conteúdo seja injetado corretamente na sua caixa de "Motivo".
+            const reasonMatch = cleanText.match(/## Motivo da Recomendação:\s*([\s\S]*?)(?=\n## Profissão Recomendada:|$)/i);
+            if (reasonMatch && reasonMatch[1]) {
+                reasonHtml = reasonMatch[1].trim().replace(/\n/g, '<br>');
             }
             
             // Título principal do resultado
@@ -440,7 +439,7 @@ Mantenha a resposta inspiradora e em Português.`;
                         <div class="text-3xl sm:text-4xl font-extrabold text-indigo-700 leading-tight">${professionHtml}</div>
                     </div>
 
-                    <!-- Bloco de Detalhe do Motivo -->
+                    <!-- Bloco de Detalhe do Motivo (Agora com extração garantida) -->
                     <div class="p-6 sm:p-8 bg-gray-50 rounded-2xl border border-gray-200">
                         <p class="text-lg font-semibold text-gray-700 mb-3">Motivo da Recomendação</p>
                         <p class="text-gray-600 leading-relaxed">${reasonHtml}</p>
@@ -459,7 +458,6 @@ Mantenha a resposta inspiradora e em Português.`;
         
         // ===================================================================================
         // INICIALIZAÇÃO FIRESTORE (BOILERPLATE OBRIGATÓRIO PARA O AMBIENTE CANVAS)
-        // O app não usa persistência, mas esta seção é necessária para o ambiente.
         // ===================================================================================
         
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
@@ -475,7 +473,6 @@ Mantenha a resposta inspiradora e em Português.`;
             if (canvasFirebaseConfig) {
                 const app = initializeApp(canvasFirebaseConfig);
                 const auth = getAuth(app);
-                // Não precisamos do db, mas o setup de auth é crucial
                 getFirestore(app); 
 
                 await setPersistence(auth, browserLocalPersistence);
@@ -492,4 +489,3 @@ Mantenha a resposta inspiradora e em Português.`;
     </script>
 </body>
 </html>
-
