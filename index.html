@@ -8,6 +8,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
+        /* A classe min-h-screen no body garante que o fundo cubra toda a tela, mesmo com pouco conteúdo */
         body { font-family: 'Inter', sans-serif; background-color: #f7f7f7; }
         /* Estilos de barra de progresso customizada com cores de esperança/crescimento */
         .progress-bar-container { background-color: #e0f2f1; /* Light Teal Background */ }
@@ -19,7 +20,7 @@
         .card-shadow { box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.05); }
     </style>
 </head>
-<body class="p-4 md:p-8">
+<body class="p-4 md:p-8 min-h-screen">
 
     <div class="max-w-4xl mx-auto">
         <header class="bg-white p-6 rounded-3xl card-shadow mb-8 border-t-4 border-teal-400">
@@ -187,7 +188,7 @@
                                     `${(item.goal - item.stock).toLocaleString('pt-BR')} restantes para a meta.`;
 
             const itemCard = document.createElement('div');
-            // Estilo do card atualizado
+            // Estilo do card atualizado. A classe 'flex flex-col md:flex-row' garante a adaptação
             itemCard.className = 'bg-white p-4 rounded-xl border-l-4 border-teal-400 flex flex-col md:flex-row items-start md:items-center justify-between shadow-md transition hover:shadow-lg';
             
             itemCard.innerHTML = `
