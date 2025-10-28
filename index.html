@@ -6,62 +6,73 @@
     <title>Gerenciador de Estoque - Projeto Social</title>
     <!-- Carrega Tailwind CSS para estilização rápida e responsiva -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #f3f4f6; }
-        /* Estilos de barra de progresso customizada */
-        .progress-bar-container { background-color: #e5e7eb; }
-        .progress-bar-fill { transition: width 0.5s ease-in-out; }
+        body { font-family: 'Inter', sans-serif; background-color: #f7f7f7; }
+        /* Estilos de barra de progresso customizada com cores de esperança/crescimento */
+        .progress-bar-container { background-color: #e0f2f1; /* Light Teal Background */ }
+        .progress-bar-fill { 
+            transition: width 0.5s ease-in-out; 
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+        /* Efeito sutil de elevação para as seções */
+        .card-shadow { box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.05); }
     </style>
 </head>
 <body class="p-4 md:p-8">
 
     <div class="max-w-4xl mx-auto">
-        <header class="bg-white p-6 rounded-xl shadow-lg mb-8">
-            <h1 class="text-3xl font-bold text-gray-800">Ajudar Faz Bem</h1>
-            <p class="text-gray-600 mt-1">Painel de Administração e Metas do Projeto</p>
-            <div id="auth-status" class="mt-4 text-sm text-green-600 font-semibold"></div>
+        <header class="bg-white p-6 rounded-3xl card-shadow mb-8 border-t-4 border-teal-400">
+            <h1 class="text-4xl font-extrabold text-teal-600">Ajudar Faz Bem</h1>
+            <p class="text-gray-500 mt-1 font-medium">Painel de Acompanhamento: Transformando Metas em Realidade.</p>
+            <!-- Status de armazenamento local com tom positivo -->
+            <div id="auth-status" class="mt-4 text-sm text-sky-600 font-semibold">Os dados estão salvos com segurança no seu navegador.</div>
         </header>
 
-        <!-- Seção de Distribuição de Cestas -->
-        <div class="bg-white p-6 rounded-xl shadow-lg mb-8">
-            <h2 class="text-xl font-semibold text-gray-700 mb-4">Meta de Distribuição de Cestas</h2>
+        <!-- Seção de Distribuição de Cestas (Mais vibrante) -->
+        <div class="bg-white p-6 rounded-2xl card-shadow mb-8">
+            <h2 class="text-xl font-bold text-gray-700 mb-4 flex items-center">
+                Meta de Impacto Social 
+                <svg class="w-6 h-6 text-yellow-500 ml-2" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118l-2.8-2.034c-.783-.57-.381-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
+            </h2>
             <div class="flex flex-col md:flex-row items-center justify-between space-y-4 md:space-y-0 md:space-x-6">
                 <div class="flex-grow w-full md:w-auto">
-                    <p class="text-sm font-medium text-gray-500">Cestas Distribuídas até agora:</p>
-                    <p id="total-baskets" class="text-4xl font-extrabold text-indigo-600">0</p>
+                    <p class="text-sm font-medium text-gray-500">Famílias Alcançadas:</p>
+                    <p id="total-baskets" class="text-5xl font-extrabold text-teal-600">0</p>
                 </div>
                 <div class="w-full md:w-auto">
-                    <button id="add-basket-btn" class="w-full md:w-auto bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-6 rounded-xl shadow-md transition duration-150 ease-in-out">
-                        + 1 Cesta Distribuída
+                    <!-- Botão verde água (teal) -->
+                    <button id="add-basket-btn" class="w-full md:w-auto bg-teal-500 hover:bg-teal-600 text-white font-bold py-3 px-6 rounded-xl shadow-lg transition duration-150 ease-in-out transform hover:scale-[1.02]">
+                        + 1 Família Ajudada
                     </button>
                 </div>
             </div>
         </div>
 
         <!-- Formulário para Adicionar Novo Item ou Atualizar Estoque -->
-        <div class="bg-white p-6 rounded-xl shadow-lg mb-8">
-            <h2 class="text-xl font-semibold text-gray-700 mb-4">Gerenciar Itens de Estoque</h2>
+        <div class="bg-white p-6 rounded-2xl card-shadow mb-8">
+            <h2 class="text-xl font-bold text-gray-700 mb-4">Gerenciar Arrecadações</h2>
             <form id="item-form" class="space-y-4">
                 <div class="flex flex-col md:flex-row md:space-x-4 space-y-4 md:space-y-0">
-                    <input type="text" id="item-name" placeholder="Nome do Item (Ex: Arroz 5kg)" required
-                           class="flex-1 p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500">
+                    <input type="text" id="item-name" placeholder="Nome do Item (Ex: Feijão Preto 1kg)" required
+                           class="flex-1 p-3 border border-gray-300 rounded-xl focus:ring-teal-500 focus:border-teal-500">
                     <input type="number" id="item-stock" placeholder="Estoque Atual (Unidades)" required min="0" value="0"
-                           class="w-full md:w-1/4 p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500">
+                           class="w-full md:w-1/4 p-3 border border-gray-300 rounded-xl focus:ring-teal-500 focus:border-teal-500">
                     <input type="number" id="item-goal" placeholder="Meta de Arrecadação" required min="1" value="100"
-                           class="w-full md:w-1/4 p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500">
+                           class="w-full md:w-1/4 p-3 border border-gray-300 rounded-xl focus:ring-teal-500 focus:border-teal-500">
                 </div>
-                <button type="submit" class="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-3 rounded-xl shadow-md transition duration-150 ease-in-out">
-                    Salvar Item / Atualizar Estoque
+                <!-- Botão de submissão verde esmeralda (emerald) -->
+                <button type="submit" class="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-3 rounded-xl shadow-md transition duration-150 ease-in-out">
+                    Salvar Novo Item / Atualizar Estoque
                 </button>
             </form>
         </div>
 
         <!-- Lista de Itens em Tempo Real -->
-        <div class="bg-white p-6 rounded-xl shadow-lg">
-            <h2 class="text-xl font-semibold text-gray-700 mb-4">Status de Arrecadação (Em Tempo Real)</h2>
+        <div class="bg-white p-6 rounded-2xl card-shadow">
+            <h2 class="text-xl font-bold text-gray-700 mb-4">Progresso de Arrecadação</h2>
             <div id="inventory-list" class="space-y-4">
-                <p class="text-center text-gray-500 italic">Carregando estoque...</p>
+                <p class="text-center text-gray-500 italic">Nenhum item cadastrado ainda. Use o formulário acima!</p>
             </div>
         </div>
     </div>
@@ -80,24 +91,164 @@
         </div>
     </div>
 
-    <!-- Firebase Imports -->
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, doc, getDoc, setDoc, onSnapshot, collection, query, addDoc, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-        import { setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        // Estruturas de dados globais e chaves de localStorage
+        let inventory = [];
+        let totalBaskets = 0;
+        const INVENTORY_KEY = 'localInventory';
+        const BASKETS_KEY = 'localBaskets';
 
-        // Configuração e Inicialização do Firebase
-        // Variáveis globais obrigatórias no ambiente Canvas: __app_id, __firebase_config, __initial_auth_token
-        setLogLevel('Debug');
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
-        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
-        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+        // --- Funções de Manipulação de Dados (localStorage) ---
 
-        let db, auth;
-        let userId = null;
+        /**
+         * Carrega o inventário e o contador de cestas do localStorage.
+         */
+        const loadData = () => {
+            const storedInventory = localStorage.getItem(INVENTORY_KEY);
+            inventory = storedInventory ? JSON.parse(storedInventory) : [];
 
-        // --- Custom Modal Functions (Replacing alert/prompt/confirm) ---
+            const storedBaskets = localStorage.getItem(BASKETS_KEY);
+            totalBaskets = storedBaskets ? parseInt(storedBaskets) : 0;
+        };
+
+        /**
+         * Salva o array de inventário no localStorage.
+         */
+        const saveInventory = () => {
+            localStorage.setItem(INVENTORY_KEY, JSON.stringify(inventory));
+            refreshUI(); // Atualiza a interface após salvar
+        };
+
+        /**
+         * Salva o contador de cestas no localStorage.
+         */
+        const saveBaskets = () => {
+            localStorage.setItem(BASKETS_KEY, totalBaskets);
+            refreshUI(); // Atualiza a interface após salvar
+        };
+
+        /**
+         * Encontra um item no array de inventário pelo ID.
+         * @param {string} itemId - O ID do item.
+         * @returns {object | undefined} O objeto do item ou undefined.
+         */
+        const findItem = (itemId) => {
+            return inventory.find(item => item.id === itemId);
+        };
+
+        // --- Funções de UI e Renderização ---
+
+        const inventoryListElement = document.getElementById('inventory-list');
+
+        /**
+         * Renderiza a lista completa de inventário na interface.
+         */
+        const renderInventoryList = () => {
+            inventoryListElement.innerHTML = '';
+            
+            if (inventory.length === 0) {
+                inventoryListElement.innerHTML = '<p class="text-center text-gray-500 italic">Nenhum item cadastrado ainda. Use o formulário acima!</p>';
+                return;
+            }
+
+            // Ordena o inventário para que itens abaixo da meta fiquem no topo
+            const sortedInventory = [...inventory].sort((a, b) => {
+                const percA = (a.stock / a.goal) * 100;
+                const percB = (b.stock / b.goal) * 100;
+                // Itens abaixo de 100% vêm primeiro, do menor para o maior percentual
+                if (percA < 100 && percB >= 100) return -1;
+                if (percA >= 100 && percB < 100) return 1;
+                return percB - percA; // Do mais longe para o mais perto
+            });
+
+            sortedInventory.forEach((item) => {
+                renderItem(item, inventoryListElement);
+            });
+        };
+        
+        /**
+         * Atualiza o contador de cestas e a lista de inventário na UI.
+         */
+        const refreshUI = () => {
+            document.getElementById('total-baskets').textContent = totalBaskets.toLocaleString('pt-BR');
+            renderInventoryList();
+        };
+
+        /**
+         * Renderiza um item individual dentro de um container.
+         */
+        const renderItem = (item, container) => {
+            const percentage = Math.min(100, (item.stock / item.goal) * 100);
+            
+            // Cores mais alegres: verde água para sucesso, azul céu para progresso
+            const bgColor = percentage >= 100 ? 'bg-emerald-500' : 'bg-sky-400';
+            const progressMessage = percentage >= 100 ? 
+                                    'Meta Atingida! 🎉' : 
+                                    `${(item.goal - item.stock).toLocaleString('pt-BR')} restantes para a meta.`;
+
+            const itemCard = document.createElement('div');
+            // Estilo do card atualizado
+            itemCard.className = 'bg-white p-4 rounded-xl border-l-4 border-teal-400 flex flex-col md:flex-row items-start md:items-center justify-between shadow-md transition hover:shadow-lg';
+            
+            itemCard.innerHTML = `
+                <div class="flex-1 min-w-0 mb-3 md:mb-0">
+                    <p class="text-lg font-bold text-gray-800 truncate">${item.name}</p>
+                    <p class="text-sm text-gray-500 mt-1">
+                        <span class="font-semibold text-teal-600">${item.stock}</span> 
+                        unidades em estoque / Meta: ${item.goal}
+                    </p>
+                    <div class="mt-2 h-3 w-full rounded-full progress-bar-container">
+                        <div class="progress-bar-fill h-full rounded-full ${bgColor}" style="width: ${percentage}%;"></div>
+                    </div>
+                    <p class="text-xs font-medium mt-1 ${percentage >= 100 ? 'text-emerald-700' : 'text-sky-600'}">
+                        ${percentage.toFixed(1)}% | ${progressMessage}
+                    </p>
+                </div>
+                <div class="flex space-x-2 mt-3 md:mt-0">
+                    <button data-id="${item.id}" class="update-stock-btn bg-sky-500 hover:bg-sky-600 text-white text-xs font-semibold py-2 px-3 rounded-lg shadow-md transition duration-150 ease-in-out flex items-center">
+                        + Estoque
+                    </button>
+                    <button data-id="${item.id}" class="delete-item-btn bg-red-500 hover:bg-red-600 text-white text-xs font-semibold py-2 px-3 rounded-lg shadow-md transition duration-150 ease-in-out flex items-center">
+                        Excluir
+                    </button>
+                </div>
+            `;
+            container.appendChild(itemCard);
+
+            // Adiciona listeners aos botões
+            itemCard.querySelector('.update-stock-btn').addEventListener('click', (e) => {
+                const itemId = e.currentTarget.getAttribute('data-id');
+                const existingItem = findItem(itemId);
+                if (existingItem) {
+                    showPrompt(
+                        'Atualizar Estoque',
+                        `Digite a nova quantidade total para ${existingItem.name} (atual: ${existingItem.stock}):`,
+                        existingItem.stock,
+                        (newStock) => {
+                            if (newStock !== null && !isNaN(parseInt(newStock))) {
+                                updateItem(itemId, parseInt(newStock));
+                            }
+                        }
+                    );
+                }
+            });
+
+            itemCard.querySelector('.delete-item-btn').addEventListener('click', (e) => {
+                const itemId = e.currentTarget.getAttribute('data-id');
+                const existingItem = findItem(itemId);
+                if (existingItem) {
+                    showConfirmation(
+                        'Confirmar Exclusão',
+                        `Tem certeza que deseja excluir o item "${existingItem.name}"?`,
+                        () => {
+                            deleteItem(itemId);
+                        }
+                    );
+                }
+            });
+        };
+        
+        // --- Custom Modal Functions (Mantidas como no código anterior) ---
 
         const modalElement = document.getElementById('custom-modal');
         const modalTitle = document.getElementById('modal-title');
@@ -113,21 +264,20 @@
             modalActions.innerHTML = '';
         };
 
-        // Alerta/Mensagem Simples
         const showModal = (title, message) => {
             modalTitle.textContent = title;
             modalMessage.textContent = message;
             
+            // Botão OK com a nova cor primária
             const okBtn = document.createElement('button');
             okBtn.textContent = 'OK';
-            okBtn.className = 'bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded-xl';
+            okBtn.className = 'bg-teal-600 hover:bg-teal-700 text-white font-bold py-2 px-4 rounded-xl';
             okBtn.onclick = hideModal;
             
             modalActions.appendChild(okBtn);
             modalElement.classList.remove('hidden');
         };
 
-        // Confirmação (Sim/Não)
         const showConfirmation = (title, message, onConfirm) => {
             modalTitle.textContent = title;
             modalMessage.textContent = message;
@@ -139,7 +289,7 @@
             
             const confirmBtn = document.createElement('button');
             confirmBtn.textContent = 'Confirmar';
-            confirmBtn.className = 'bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-xl';
+            confirmBtn.className = 'bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-xl';
             confirmBtn.onclick = () => {
                 hideModal();
                 onConfirm();
@@ -150,7 +300,6 @@
             modalElement.classList.remove('hidden');
         };
         
-        // Prompt (Entrada de Dados)
         const showPrompt = (title, message, initialValue, onConfirm) => {
             modalTitle.textContent = title;
             modalMessage.textContent = message;
@@ -162,12 +311,13 @@
             cancelBtn.className = 'text-gray-600 hover:bg-gray-100 font-bold py-2 px-4 rounded-xl';
             cancelBtn.onclick = () => {
                 hideModal();
-                onConfirm(null); // Retorna null no cancelamento
+                onConfirm(null); 
             };
             
+            // Botão de atualização com a nova cor de sucesso
             const confirmBtn = document.createElement('button');
             confirmBtn.textContent = 'Atualizar';
-            confirmBtn.className = 'bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-xl';
+            confirmBtn.className = 'bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-2 px-4 rounded-xl';
             confirmBtn.onclick = () => {
                 const value = modalInput.value;
                 hideModal();
@@ -180,140 +330,12 @@
             modalInput.focus();
         };
 
-        // --- End Custom Modal Functions ---
+        // --- Lógica de Negócios ---
 
-
-        // --- Funções Auxiliares de Gerenciamento de Dados ---
-
-        // Caminhos de Coleção
-        const getGlobalDataPath = () => doc(db, `/artifacts/${appId}/public/data/project_status`, 'global_data');
-        const getInventoryCollectionPath = () => collection(db, `/artifacts/${appId}/public/data/inventory_items`);
-
-        // 1. Inicialização do Firebase e Autenticação
-        const initFirebase = async () => {
-            try {
-                if (!firebaseConfig || Object.keys(firebaseConfig).length === 0) {
-                    console.error("Firebase config is missing or empty.");
-                    document.getElementById('auth-status').textContent = "ERRO: Configuração do Firebase não encontrada.";
-                    return;
-                }
-
-                const app = initializeApp(firebaseConfig);
-                db = getFirestore(app);
-                auth = getAuth(app);
-
-                // Autenticação (usando o token ou de forma anônima)
-                if (initialAuthToken) {
-                    await signInWithCustomToken(auth, initialAuthToken);
-                    document.getElementById('auth-status').textContent = "Usuário autenticado e pronto para gerenciar.";
-                } else {
-                    await signInAnonymously(auth);
-                    document.getElementById('auth-status').textContent = "Usuário anônimo autenticado (pode gerenciar).";
-                }
-                
-                userId = auth.currentUser?.uid || 'anonymous';
-                
-                // Iniciar listeners em tempo real
-                setupRealtimeListeners();
-
-            } catch (error) {
-                console.error("Erro ao inicializar Firebase ou autenticar:", error);
-                document.getElementById('auth-status').textContent = `ERRO de Inicialização: ${error.message}`;
-            }
-        };
-
-        // 2. Setup de Listeners em Tempo Real
-        const setupRealtimeListeners = () => {
-            if (!db) return;
-
-            // Listener 1: Status Global (Cestas Distribuídas)
-            onSnapshot(getGlobalDataPath(), (doc) => {
-                const data = doc.data();
-                const totalBaskets = data?.totalBasketsDistributed || 0;
-                document.getElementById('total-baskets').textContent = totalBaskets.toLocaleString('pt-BR');
-                console.log("Cestas Distribuídas atualizadas:", totalBaskets);
-            }, (error) => {
-                console.error("Erro ao ouvir status global:", error);
-            });
-
-
-            // Listener 2: Lista de Itens de Estoque
-            onSnapshot(query(getInventoryCollectionPath()), (snapshot) => {
-                const inventoryListElement = document.getElementById('inventory-list');
-                inventoryListElement.innerHTML = ''; // Limpa a lista
-                
-                if (snapshot.empty) {
-                    inventoryListElement.innerHTML = '<p class="text-center text-gray-500 italic">Nenhum item cadastrado ainda. Use o formulário acima!</p>';
-                    return;
-                }
-
-                snapshot.docs.forEach((docSnapshot) => {
-                    const item = docSnapshot.data();
-                    const itemId = docSnapshot.id;
-                    renderItem(item, itemId, inventoryListElement);
-                });
-                console.log("Itens de Estoque atualizados.");
-            }, (error) => {
-                console.error("Erro ao ouvir inventário:", error);
-                inventoryListElement.innerHTML = '<p class="text-center text-red-500 font-bold">Erro ao carregar dados do estoque.</p>';
-            });
-        };
-
-        // 3. Renderizar Item Individual
-        const renderItem = (item, itemId, container) => {
-            const percentage = Math.min(100, (item.stock / item.goal) * 100);
-            const bgColor = percentage >= 100 ? 'bg-indigo-500' : 'bg-yellow-500';
-
-            const itemCard = document.createElement('div');
-            itemCard.className = 'bg-gray-50 p-4 rounded-lg border border-gray-200 flex flex-col md:flex-row items-start md:items-center justify-between shadow-sm';
-            
-            itemCard.innerHTML = `
-                <div class="flex-1 min-w-0 mb-3 md:mb-0">
-                    <p class="text-lg font-semibold text-gray-800 truncate">${item.name}</p>
-                    <p class="text-sm text-gray-500">${item.stock} unidades em estoque / Meta: ${item.goal} unidades</p>
-                    <div class="mt-2 h-3 w-full rounded-full progress-bar-container">
-                        <div class="progress-bar-fill h-full rounded-full ${bgColor}" style="width: ${percentage}%;"></div>
-                    </div>
-                    <p class="text-xs font-medium mt-1 text-gray-600">${percentage.toFixed(1)}% da meta alcançada</p>
-                </div>
-                <div class="flex space-x-2">
-                    <button data-id="${itemId}" class="update-stock-btn bg-blue-500 hover:bg-blue-600 text-white text-xs font-semibold py-2 px-3 rounded-lg shadow-md transition duration-150 ease-in-out flex items-center">
-                        + Estoque
-                    </button>
-                    <button data-id="${itemId}" class="delete-item-btn bg-red-500 hover:bg-red-600 text-white text-xs font-semibold py-2 px-3 rounded-lg shadow-md transition duration-150 ease-in-out flex items-center">
-                        Excluir
-                    </button>
-                </div>
-            `;
-            container.appendChild(itemCard);
-
-            // Adiciona listeners aos novos botões (agora usando showPrompt e showConfirmation)
-            itemCard.querySelector('.update-stock-btn').addEventListener('click', (e) => {
-                showPrompt(
-                    'Atualizar Estoque',
-                    `Digite a nova quantidade total para ${item.name} (atual: ${item.stock}):`,
-                    item.stock,
-                    (newStock) => {
-                        if (newStock !== null && !isNaN(parseInt(newStock))) {
-                            updateItem(itemId, parseInt(newStock));
-                        }
-                    }
-                );
-            });
-
-            itemCard.querySelector('.delete-item-btn').addEventListener('click', (e) => {
-                 showConfirmation(
-                    'Confirmar Exclusão',
-                    `Tem certeza que deseja excluir o item "${item.name}"?`,
-                    () => {
-                        deleteItem(itemId);
-                    }
-                 );
-            });
-        };
-
-        // 4. Salvar/Atualizar Item via Formulário
-        const handleItemSubmit = async (e) => {
+        /**
+         * Salva ou atualiza um item no array local.
+         */
+        const handleItemSubmit = (e) => {
             e.preventDefault();
             const name = document.getElementById('item-name').value.trim();
             const stock = parseInt(document.getElementById('item-stock').value);
@@ -324,69 +346,63 @@
                 return;
             }
 
-            try {
-                // Usa o nome como ID para que o mesmo item seja sempre atualizado
-                const itemId = name.toLowerCase().replace(/[^a-z0-9]+/g, '_');
-                const itemRef = doc(db, getInventoryCollectionPath().path, itemId);
+            // Usa o nome (normalizado) como ID único local
+            const itemId = name.toLowerCase().replace(/[^a-z0-9]+/g, '_');
+            
+            const existingIndex = inventory.findIndex(item => item.id === itemId);
 
-                await setDoc(itemRef, { name, stock, goal, userId }, { merge: true });
-                
-                document.getElementById('item-form').reset();
-                showModal('Sucesso', `Item "${name}" salvo/atualizado com sucesso!`);
-            } catch (error) {
-                console.error("Erro ao salvar/atualizar item:", error);
-                showModal('Erro de Dados', "Erro ao salvar o item. Verifique o console.");
+            const newItemData = { id: itemId, name, stock, goal };
+
+            if (existingIndex > -1) {
+                // Atualiza item existente
+                inventory[existingIndex] = newItemData;
+            } else {
+                // Adiciona novo item
+                inventory.push(newItemData);
+            }
+            
+            document.getElementById('item-form').reset();
+            saveInventory();
+            showModal('Sucesso', `Item "${name}" salvo/atualizado com sucesso!`);
+        };
+
+        /**
+         * Atualiza apenas o estoque de um item.
+         */
+        const updateItem = (itemId, newStock) => {
+            const index = inventory.findIndex(item => item.id === itemId);
+            if (index > -1) {
+                inventory[index].stock = newStock;
+                saveInventory();
             }
         };
 
-        // 5. Atualizar Apenas o Estoque
-        const updateItem = async (itemId, newStock) => {
-            try {
-                const itemRef = doc(db, getInventoryCollectionPath().path, itemId);
-                await updateDoc(itemRef, { stock: newStock });
-            } catch (error) {
-                console.error("Erro ao atualizar estoque:", error);
-                showModal('Erro de Dados', "Erro ao atualizar o estoque. Verifique o console.");
-            }
+        /**
+         * Exclui um item.
+         */
+        const deleteItem = (itemId) => {
+            inventory = inventory.filter(item => item.id !== itemId);
+            saveInventory();
         };
 
-        // 6. Excluir Item
-        const deleteItem = async (itemId) => {
-            try {
-                const itemRef = doc(db, getInventoryCollectionPath().path, itemId);
-                await deleteDoc(itemRef);
-            } catch (error) {
-                console.error("Erro ao excluir item:", error);
-                showModal('Erro de Dados', "Erro ao excluir o item. Verifique o console.");
-            }
+        /**
+         * Adiciona uma cesta distribuída.
+         */
+        const handleAddBasket = () => {
+            totalBaskets += 1;
+            saveBaskets();
         };
 
-        // 7. Adicionar Cesta Distribuída
-        const handleAddBasket = async () => {
-            try {
-                const globalDataRef = getGlobalDataPath();
-                const docSnap = await getDoc(globalDataRef);
-                
-                let currentBaskets = 0;
-                if (docSnap.exists()) {
-                    currentBaskets = docSnap.data().totalBasketsDistributed || 0;
-                }
-
-                const newBaskets = currentBaskets + 1;
-
-                await setDoc(globalDataRef, { totalBasketsDistributed: newBaskets, userId }, { merge: true });
-            } catch (error) {
-                console.error("Erro ao adicionar cesta:", error);
-                showModal('Erro de Dados', "Erro ao registrar cesta. Verifique o console.");
-            }
+        // --- Inicialização e Event Listeners ---
+        
+        // Carrega os dados iniciais do localStorage ao carregar a página
+        window.onload = () => {
+            loadData();
+            refreshUI();
         };
 
-        // --- Event Listeners ---
         document.getElementById('item-form').addEventListener('submit', handleItemSubmit);
         document.getElementById('add-basket-btn').addEventListener('click', handleAddBasket);
-
-        // Inicia o aplicativo
-        window.onload = initFirebase;
     </script>
 
 </body>
