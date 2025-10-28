@@ -3,489 +3,391 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Teste Vocacional IA: Descubra Seu Caminho</title>
-    <!-- Carrega Tailwind CSS para estilização e modernidade -->
+    <title>Gerenciador de Estoque - Projeto Social</title>
+    <!-- Carrega Tailwind CSS para estilização rápida e responsiva -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
-        /* Importa a fonte Inter para um visual moderno */
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
-        
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #f7fafc; /* Fundo muito claro, quase branco */
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            color: #1f2937; /* Cinza escuro para melhor contraste */
-        }
-        
-        .text-gradient {
-            /* Gradiente moderno: Indigo para Teal */
-            background-image: linear-gradient(to right, #4338ca, #10b981); 
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-        
-        .card-shadow {
-            /* Sombra mais pronunciada para um efeito de profundidade */
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-        }
-        
-        .quiz-option {
-            transition: all 0.2s ease;
-            cursor: pointer;
-            border-color: #e5e7eb; /* Gray 200 */
-        }
-        
-        .quiz-option:hover {
-            background-color: #f0fdf4; /* Teal 50 hover leve */
-            transform: translateY(-2px);
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-        }
-        
-        .quiz-option.selected {
-            border-color: #10b981; /* Teal 500 */
-            background-color: #e0f2f1; /* Teal 100 */
-            font-weight: 600;
-        }
-        
-        .loading-animation {
-            border-top-color: #10b981; /* Cor Teal para o spinner */
-            animation: spin 1s ease-in-out infinite;
-        }
-        
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-        
-        /* Estilo para ícones SVG inline */
-        .lucide-icon {
-            display: inline-block;
-            vertical-align: middle;
-        }
+        body { font-family: 'Inter', sans-serif; background-color: #f3f4f6; }
+        /* Estilos de barra de progresso customizada */
+        .progress-bar-container { background-color: #e5e7eb; }
+        .progress-bar-fill { transition: width 0.5s ease-in-out; }
     </style>
 </head>
-<body class="text-gray-800">
+<body class="p-4 md:p-8">
 
-    <!-- Cabeçalho Fixo e Moderno -->
-    <header class="bg-white shadow-lg sticky top-0 z-50">
-        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-5">
-            <h1 class="text-3xl font-extrabold text-gradient text-center flex items-center justify-center">
-                <!-- Ícone de Bússola (SVG) para dar um toque visual -->
-                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon mr-3 text-indigo-600">
-                    <circle cx="12" cy="12" r="10"/><path d="m16 8-2 8-8 2 2-8 8-2z"/>
-                </svg>
-                Descubra Seu Caminho - Teste Vocacional IA
-            </h1>
-            <p class="text-center text-sm text-gray-500 mt-1">Sua bússola de carreira em 5 passos.</p>
-        </div>
-    </header>
+    <div class="max-w-4xl mx-auto">
+        <header class="bg-white p-6 rounded-xl shadow-lg mb-8">
+            <h1 class="text-3xl font-bold text-gray-800">Cestas de Solidariedade</h1>
+            <p class="text-gray-600 mt-1">Painel de Administração e Metas do Projeto</p>
+            <div id="auth-status" class="mt-4 text-sm text-green-600 font-semibold"></div>
+        </header>
 
-    <!-- Área Principal do Quiz: Centralizada e Responsiva -->
-    <main class="flex-grow max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10 flex items-start justify-center">
-
-        <div id="quiz-container" class="bg-white p-6 sm:p-10 rounded-3xl card-shadow w-full max-w-3xl">
-            
-            <!-- Progress Bar Aprimorada -->
-            <div class="mb-8">
-                <div class="text-sm font-medium text-teal-600 mb-2 flex justify-between items-center">
-                    <span>Progresso</span>
-                    <span id="progress-text" class="font-bold">Pergunta 1 de 5</span>
+        <!-- Seção de Distribuição de Cestas -->
+        <div class="bg-white p-6 rounded-xl shadow-lg mb-8">
+            <h2 class="text-xl font-semibold text-gray-700 mb-4">Meta de Distribuição de Cestas</h2>
+            <div class="flex flex-col md:flex-row items-center justify-between space-y-4 md:space-y-0 md:space-x-6">
+                <div class="flex-grow w-full md:w-auto">
+                    <p class="text-sm font-medium text-gray-500">Cestas Distribuídas até agora:</p>
+                    <p id="total-baskets" class="text-4xl font-extrabold text-indigo-600">0</p>
                 </div>
-                <div class="w-full bg-gray-200 rounded-full h-3">
-                    <!-- Progress Bar com cor Teal -->
-                    <div id="progress-bar" class="bg-teal-500 h-3 rounded-full transition-all duration-500" style="width: 0%"></div>
+                <div class="w-full md:w-auto">
+                    <button id="add-basket-btn" class="w-full md:w-auto bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-6 rounded-xl shadow-md transition duration-150 ease-in-out">
+                        + 1 Cesta Distribuída
+                    </button>
                 </div>
             </div>
-
-            <!-- Conteúdo do Quiz/Resultado -->
-            <div id="content-area">
-                <p class="text-center text-gray-500">Iniciando teste...</p>
-            </div>
-
-            <!-- Botões de Navegação com ícones e cantos arredondados -->
-            <div id="navigation-buttons" class="mt-10 flex justify-between">
-                <button id="btn-back" onclick="previousQuestion()" class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold py-3 px-6 rounded-full transition duration-300 disabled:opacity-50 disabled:cursor-not-allowed">
-                    <span class="mr-2">&larr;</span> Voltar
-                </button>
-                <button id="btn-next" onclick="nextQuestion()" class="bg-indigo-600 hover:bg-teal-500 text-white font-bold py-3 px-6 rounded-full transition duration-300 shadow-xl shadow-indigo-200 disabled:opacity-50 disabled:cursor-not-allowed" disabled>
-                    Próxima Pergunta <span class="ml-2">&rarr;</span>
-                </button>
-            </div>
-
         </div>
-    </main>
 
-    <!-- Rodapé Simples -->
-    <footer class="bg-white mt-auto py-4 text-center text-xs text-gray-500 shadow-inner border-t border-gray-100">
-        Desenvolvido com Consciência e Gemini API para análise vocacional.
-    </footer>
+        <!-- Formulário para Adicionar Novo Item ou Atualizar Estoque -->
+        <div class="bg-white p-6 rounded-xl shadow-lg mb-8">
+            <h2 class="text-xl font-semibold text-gray-700 mb-4">Gerenciar Itens de Estoque</h2>
+            <form id="item-form" class="space-y-4">
+                <div class="flex flex-col md:flex-row md:space-x-4 space-y-4 md:space-y-0">
+                    <input type="text" id="item-name" placeholder="Nome do Item (Ex: Arroz 5kg)" required
+                           class="flex-1 p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500">
+                    <input type="number" id="item-stock" placeholder="Estoque Atual (Unidades)" required min="0" value="0"
+                           class="w-full md:w-1/4 p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500">
+                    <input type="number" id="item-goal" placeholder="Meta de Arrecadação" required min="1" value="100"
+                           class="w-full md:w-1/4 p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500">
+                </div>
+                <button type="submit" class="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-3 rounded-xl shadow-md transition duration-150 ease-in-out">
+                    Salvar Item / Atualizar Estoque
+                </button>
+            </form>
+        </div>
 
+        <!-- Lista de Itens em Tempo Real -->
+        <div class="bg-white p-6 rounded-xl shadow-lg">
+            <h2 class="text-xl font-semibold text-gray-700 mb-4">Status de Arrecadação (Em Tempo Real)</h2>
+            <div id="inventory-list" class="space-y-4">
+                <p class="text-center text-gray-500 italic">Carregando estoque...</p>
+            </div>
+        </div>
+    </div>
 
+    <!-- Custom Modal/Dialog Structure (Substitui alert, prompt e confirm) -->
+    <div id="custom-modal" class="fixed inset-0 bg-gray-900 bg-opacity-75 hidden z-50 flex items-center justify-center">
+        <div class="bg-white p-6 rounded-xl shadow-2xl w-full max-w-sm mx-4 transform transition-all duration-300 scale-95" id="modal-content">
+            <h3 id="modal-title" class="text-lg font-bold text-gray-800 mb-3"></h3>
+            <p id="modal-message" class="text-sm text-gray-600 mb-4"></p>
+            <div id="modal-input-container" class="mb-4 hidden">
+                <input type="number" id="modal-input" class="w-full p-2 border border-gray-300 rounded-lg" placeholder="Digite o valor">
+            </div>
+            <div id="modal-actions" class="flex justify-end space-x-2">
+                <!-- Botões gerados dinamicamente pelo JS -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase Imports -->
     <script type="module">
-        // ===================================================================================
-        // CONFIGURAÇÃO DA API E DADOS
-        // ===================================================================================
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, getDoc, setDoc, onSnapshot, collection, query, addDoc, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        // Variáveis globais do ambiente Canvas
-        const canvasAppId = typeof __app_id !== 'undefined' ? __app_id : null;
-        const finalGeminiKey = canvasAppId ? "" : ""; // Deixada vazia para injeção de credencial
+        // Configuração e Inicialização do Firebase
+        // Variáveis globais obrigatórias no ambiente Canvas: __app_id, __firebase_config, __initial_auth_token
+        setLogLevel('Debug');
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
+        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
 
-        let currentStep = 0;
-        let userAnswers = {}; // { 'q1': 'A', 'q2': 'C', ... }
-        let totalQuestions = 0;
+        let db, auth;
+        let userId = null;
 
-        // Perguntas focadas em áreas de carreira modernas (Tech, Social, Criação)
-        const questions = [
-            {
-                id: 'q1',
-                question: "O que te dá mais energia e satisfação no dia a dia?",
-                options: {
-                    A: "Interagir e colaborar com muitas pessoas, resolvendo conflitos ou motivando-as.",
-                    B: "Analisar dados, encontrar padrões e construir sistemas lógicos e eficientes.",
-                    C: "Criar algo do zero (design, arte, protótipo) ou expressar ideias visualmente.",
-                    D: "Ajudar diretamente indivíduos ou comunidades a melhorar suas vidas e bem-estar."
-                },
-                profile: { A: 'Social-Comunicação', B: 'Lógico-Analítico', C: 'Criativo-Visual', D: 'Empático-Serviço' }
-            },
-            {
-                id: 'q2',
-                question: "Qual tipo de desafio você prefere estudar ou dominar?",
-                options: {
-                    A: "Técnicas de persuasão, marketing, negociação e gestão de equipes.",
-                    B: "Cálculo avançado, programação, ciência de dados e desenvolvimento de algoritmos.",
-                    C: "Design de interfaces (UI/UX), arquitetura ou composição musical e cinematográfica.",
-                    D: "Psicologia humana, gestão de crises emocionais ou técnicas de saúde e nutrição."
-                },
-                profile: { A: 'Estratégico-Liderança', B: 'Tecnológico-Exatas', C: 'Artístico-Inovação', D: 'Humanas-Cuidado' }
-            },
-            {
-                id: 'q3',
-                question: "Ao enfrentar um problema complexo, qual é sua reação inicial?",
-                options: {
-                    A: "Organizo imediatamente uma reunião com stakeholders para alinhar a estratégia de ataque.",
-                    B: "Me isolo, quebro o problema em variáveis e busco a solução mais lógica e 'bug-free'.",
-                    C: "Rascunho várias abordagens não-convencionais e escolho a mais original e impactante.",
-                    D: "Busco entender como o problema afeta as pessoas envolvidas para propor uma solução justa e centrada no ser humano."
-                },
-                profile: { A: 'Coordenador-Dinâmico', B: 'Metódico-Focado', C: 'Visionário-Disruptivo', D: 'Colaborativo-Comunitário' }
-            },
-            {
-                id: 'q4',
-                question: "Qual ambiente de trabalho te motiva mais?",
-                options: {
-                    A: "Um escritório movimentado, com interação constante, prazos apertados e foco em resultados de vendas/gestão.",
-                    B: "Um laboratório, data center ou casa, onde a concentração profunda em dados ou códigos é essencial.",
-                    C: "Um estúdio, oficina ou campo, onde você pode manipular materiais ou interfaces para ver o resultado tangível.",
-                    D: "Um local que exige escuta ativa, como um consultório, centro de ensino ou campo de serviço social."
-                },
-                profile: { A: 'Executivo-Pressão', B: 'Científico-Preciso', C: 'Prático-Estúdio', D: 'Atendimento-Escuta' }
-            },
-            {
-                id: 'q5',
-                question: "Para você, o que define 'sucesso' em uma carreira?",
-                options: {
-                    A: "Ter influência, liderar grandes projetos ou equipes e ser reconhecido publicamente no meu campo.",
-                    B: "Criar um sistema ou tecnologia que funcione perfeitamente, garantindo excelência e eficiência.",
-                    C: "Ter liberdade criativa total para expressar minha visão de mundo e deixar uma marca única.",
-                    D: "Deixar um impacto positivo claro na vida de outras pessoas ou na sociedade, focando no propósito."
-                },
-                profile: { A: 'Influência-Status', B: 'Excelência-Funcional', C: 'Liberdade-Expressão', D: 'Propósito-Impacto' }
-            }
-        ];
+        // --- Custom Modal Functions (Replacing alert/prompt/confirm) ---
 
-        totalQuestions = questions.length;
+        const modalElement = document.getElementById('custom-modal');
+        const modalTitle = document.getElementById('modal-title');
+        const modalMessage = document.getElementById('modal-message');
+        const modalActions = document.getElementById('modal-actions');
+        const modalInputContainer = document.getElementById('modal-input-container');
+        const modalInput = document.getElementById('modal-input');
 
-        // ===================================================================================
-        // LÓGICA DO QUIZ
-        // ===================================================================================
-
-        window.onload = () => {
-            renderQuestion(currentStep);
+        const hideModal = () => {
+            modalElement.classList.add('hidden');
+            modalInputContainer.classList.add('hidden');
+            modalInput.value = '';
+            modalActions.innerHTML = '';
         };
 
-        /** Renderiza a pergunta atual ou a tela final. */
-        function renderQuestion(step) {
-            const contentArea = document.getElementById('content-area');
-            const btnNext = document.getElementById('btn-next');
-            const btnBack = document.getElementById('btn-back');
-            const progressText = document.getElementById('progress-text');
-            const progressBar = document.getElementById('progress-bar');
-
-            // Atualiza o progresso visual
-            const progressPercent = ((step + 1) / totalQuestions) * 100;
-            progressBar.style.width = `${progressPercent}%`;
-            progressText.textContent = `Pergunta ${step + 1} de ${totalQuestions}`;
+        // Alerta/Mensagem Simples
+        const showModal = (title, message) => {
+            modalTitle.textContent = title;
+            modalMessage.textContent = message;
             
-            // Lógica dos Botões de Navegação
-            btnBack.disabled = step === 0;
-            btnNext.textContent = (step === totalQuestions - 1) ? 'Ver Resultado' : 'Próxima Pergunta';
+            const okBtn = document.createElement('button');
+            okBtn.textContent = 'OK';
+            okBtn.className = 'bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded-xl';
+            okBtn.onclick = hideModal;
             
-            // Verifica se a resposta foi dada para habilitar o botão
-            if (userAnswers[questions[step].id]) {
-                btnNext.disabled = false;
-            } else {
-                btnNext.disabled = true;
-            }
-
-            const currentQuestion = questions[step];
-            
-            // HTML da Pergunta
-            let questionHtml = `
-                <div class="mb-6">
-                    <p class="text-sm font-semibold text-teal-600 mb-1">Passo ${step + 1}</p>
-                    <h3 class="text-2xl font-bold text-gray-800">
-                        ${currentQuestion.question}
-                    </h3>
-                </div>
-                <div id="options-container" class="space-y-4">
-            `;
-
-            // Loop para as opções
-            for (const key in currentQuestion.options) {
-                const isSelected = userAnswers[currentQuestion.id] === key;
-                questionHtml += `
-                    <div 
-                        class="quiz-option p-4 border-2 rounded-xl text-lg ${isSelected ? 'selected' : ''}" 
-                        onclick="selectAnswer('${currentQuestion.id}', '${key}')"
-                        data-answer="${key}"
-                    >
-                        <span class="font-bold text-indigo-700 w-8 inline-block">${key}.</span> 
-                        <span class="ml-2">${currentQuestion.options[key]}</span>
-                    </div>
-                `;
-            }
-            
-            questionHtml += `</div>`;
-            contentArea.innerHTML = questionHtml;
-        }
-
-        /** Seleciona a resposta e atualiza o estado */
-        window.selectAnswer = function(questionId, answerKey) {
-            userAnswers[questionId] = answerKey;
-            
-            // Remove a classe 'selected' de todos e adiciona ao clicado
-            const optionsContainer = document.getElementById('options-container');
-            Array.from(optionsContainer.children).forEach(option => {
-                option.classList.remove('selected');
-                if (option.dataset.answer === answerKey) {
-                    option.classList.add('selected');
-                }
-            });
-
-            // Habilita o botão "Próxima Pergunta"
-            document.getElementById('btn-next').disabled = false;
+            modalActions.appendChild(okBtn);
+            modalElement.classList.remove('hidden');
         };
 
-        /** Avança para a próxima pergunta ou finaliza o quiz */
-        window.nextQuestion = function() {
-            if (currentStep < totalQuestions - 1) {
-                currentStep++;
-                renderQuestion(currentStep);
-            } else {
-                // FIM DO QUIZ: Oculta botões e chama a IA
-                document.getElementById('navigation-buttons').classList.add('hidden');
-                document.getElementById('progress-bar').style.width = '100%';
-                document.getElementById('progress-text').textContent = 'Análise Finalizada';
-                displayLoading();
-                generateRecommendation();
-            }
-        };
-
-        /** Volta para a pergunta anterior */
-        window.previousQuestion = function() {
-            if (currentStep > 0) {
-                currentStep--;
-                document.getElementById('navigation-buttons').classList.remove('hidden');
-                renderQuestion(currentStep);
-            }
+        // Confirmação (Sim/Não)
+        const showConfirmation = (title, message, onConfirm) => {
+            modalTitle.textContent = title;
+            modalMessage.textContent = message;
+            
+            const cancelBtn = document.createElement('button');
+            cancelBtn.textContent = 'Cancelar';
+            cancelBtn.className = 'text-gray-600 hover:bg-gray-100 font-bold py-2 px-4 rounded-xl';
+            cancelBtn.onclick = hideModal;
+            
+            const confirmBtn = document.createElement('button');
+            confirmBtn.textContent = 'Confirmar';
+            confirmBtn.className = 'bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-xl';
+            confirmBtn.onclick = () => {
+                hideModal();
+                onConfirm();
+            };
+            
+            modalActions.appendChild(cancelBtn);
+            modalActions.appendChild(confirmBtn);
+            modalElement.classList.remove('hidden');
         };
         
-        /** Exibe o estado de carregamento da IA com novo design */
-        function displayLoading() {
-            const contentArea = document.getElementById('content-area');
-            contentArea.innerHTML = `
-                <div class="text-center py-16">
-                    <div class="loading-animation w-16 h-16 border-4 border-gray-200 border-solid rounded-full mx-auto mb-6"></div>
-                    <h3 class="text-2xl font-bold text-indigo-600">🧠 Processando Respostas...</h3>
-                    <p class="text-gray-500 mt-2">Nossa Inteligência Artificial está analisando seu perfil único. Aguarde um momento.</p>
-                </div>
-            `;
-        }
-
-        /** Compila as respostas em um resumo para a IA */
-        function summarizeProfile() {
-            let summary = 'Respostas Detalhadas e Perfis Associados:\n';
-            for (const q of questions) {
-                const answerKey = userAnswers[q.id];
-                if (answerKey) {
-                    // Compila o perfil e a descrição da resposta para melhor análise da IA.
-                    summary += `- Pergunta "${q.question}" (Resposta ${answerKey}): Foco do Perfil: ${q.profile[answerKey]}. Conteúdo da resposta: "${q.options[answerKey]}".\n`;
-                }
-            }
-            return summary;
-        }
-
-
-        /** Compila as respostas e gera a recomendação com a IA */
-        async function generateRecommendation() {
-            if (!canvasAppId) {
-                 document.getElementById('content-area').innerHTML = `
-                    <div class="text-center py-12 bg-red-50 rounded-lg p-6 border border-red-200 text-red-700">
-                        <h3 class="text-2xl font-bold mb-4">🚨 Aviso de API 🚨</h3>
-                        <p>O resultado detalhado só pode ser gerado em um ambiente configurado com as credenciais da API Gemini.</p>
-                        <p class="mt-4 text-sm text-gray-600">Exibindo um resultado de exemplo.</p>
-                    </div>
-                `;
-                // Resultado simulado para o ambiente sem Canvas/API
-                const exampleResult = `
-                    ## Profissão Recomendada:
-                    **Especialista em Desenvolvimento de Software (Full Stack)**
-                    
-                    ## Motivo da Recomendação:
-                    Seu perfil demonstrou forte inclinação para o **Lógico-Analítico** (Q1, Q2) e foco em **Excelência Funcional** (Q5). Esta carreira combina a necessidade de **Metódico-Focado** (Q3, Q4) com a criação de sistemas eficientes.
-                `;
-                displayResult(exampleResult);
-                return;
-            }
-
-
-            const profileSummary = summarizeProfile();
+        // Prompt (Entrada de Dados)
+        const showPrompt = (title, message, initialValue, onConfirm) => {
+            modalTitle.textContent = title;
+            modalMessage.textContent = message;
+            modalInputContainer.classList.remove('hidden');
+            modalInput.value = initialValue;
             
-            // 1. O Prompt para a IA
-            const systemPrompt = `Você é um Analista Vocacional especializado em carreiras do século 21. Analise o perfil do usuário e gere uma resposta concisa, contendo APENAS duas seções obrigatórias no formato Markdown, sem introduções, conclusões ou textos adicionais:
-1. **Profissão Recomendada:** O nome da carreira mais indicada, focando em áreas como Tecnologia, Dados, Design (UX), Sustentabilidade ou Gestão.
-2. **Motivo da Recomendação:** Uma explicação de no máximo 3 frases, destacando como esta carreira se alinha com as palavras-chave do perfil (e.g., Lógico-Analítico, Criativo-Visual, Propósito-Impacto).
-Mantenha a resposta inspiradora e em Português.`;
-            
-            const userQuery = `Minhas respostas ao teste vocacional geraram o seguinte resumo de perfil:
-                ${profileSummary}
-                Com base neste perfil, gere a recomendação de carreira.
-            `;
-            
-            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${finalGeminiKey}`;
-
-            const payload = {
-                contents: [{ parts: [{ text: userQuery }] }],
-                systemInstruction: { parts: [{ text: systemPrompt }] },
+            const cancelBtn = document.createElement('button');
+            cancelBtn.textContent = 'Cancelar';
+            cancelBtn.className = 'text-gray-600 hover:bg-gray-100 font-bold py-2 px-4 rounded-xl';
+            cancelBtn.onclick = () => {
+                hideModal();
+                onConfirm(null); // Retorna null no cancelamento
             };
-
-            let responseText = "Desculpe, houve um erro ao processar sua solicitação.";
             
-            // Implementação de Backoff Exponencial
-            const MAX_RETRIES = 3;
-            for (let i = 0; i < MAX_RETRIES; i++) {
-                try {
-                    const response = await fetch(apiUrl, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(payload)
-                    });
-                    
-                    if (response.ok) {
-                        const result = await response.json();
-                        responseText = result.candidates?.[0]?.content?.parts?.[0]?.text || "Assistente não conseguiu gerar a resposta. Tente novamente.";
-                        break;
-                    } else if (response.status === 429 && i < MAX_RETRIES - 1) {
-                        const delay = Math.pow(2, i) * 1000;
-                        await new Promise(resolve => setTimeout(resolve, delay));
-                    } else {
-                        throw new Error(`Erro de API: ${response.status} ${response.statusText}`);
-                    }
-                } catch (error) {
-                    console.error("Erro na chamada da API:", error);
-                    responseText = "Erro de rede ou na API. Verifique sua conexão ou tente novamente.";
-                    if (i === MAX_RETRIES - 1) break;
+            const confirmBtn = document.createElement('button');
+            confirmBtn.textContent = 'Atualizar';
+            confirmBtn.className = 'bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-xl';
+            confirmBtn.onclick = () => {
+                const value = modalInput.value;
+                hideModal();
+                onConfirm(value);
+            };
+            
+            modalActions.appendChild(cancelBtn);
+            modalActions.appendChild(confirmBtn);
+            modalElement.classList.remove('hidden');
+            modalInput.focus();
+        };
+
+        // --- End Custom Modal Functions ---
+
+
+        // --- Funções Auxiliares de Gerenciamento de Dados ---
+
+        // Caminhos de Coleção
+        const getGlobalDataPath = () => doc(db, `/artifacts/${appId}/public/data/project_status`, 'global_data');
+        const getInventoryCollectionPath = () => collection(db, `/artifacts/${appId}/public/data/inventory_items`);
+
+        // 1. Inicialização do Firebase e Autenticação
+        const initFirebase = async () => {
+            try {
+                if (!firebaseConfig || Object.keys(firebaseConfig).length === 0) {
+                    console.error("Firebase config is missing or empty.");
+                    document.getElementById('auth-status').textContent = "ERRO: Configuração do Firebase não encontrada.";
+                    return;
                 }
-            }
 
-            // Exibir resposta no formato Markdown
-            displayResult(responseText);
-        }
+                const app = initializeApp(firebaseConfig);
+                db = getFirestore(app);
+                auth = getAuth(app);
 
-        /** Renderiza o resultado final formatado, focando na Profissão e Motivo. */
-        function displayResult(markdownText) {
-            // Remove quebras de linha desnecessárias e trata negrito
-            let cleanText = markdownText.trim();
-            cleanText = cleanText.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-            
-            let professionHtml = 'Análise em progresso...';
-            let reasonHtml = 'Análise em progresso...';
-
-            // NOVO REGEX: Extrai a Profissão (texto que segue "## Profissão Recomendada:" até o próximo título ou fim)
-            const professionMatch = cleanText.match(/## Profissão Recomendada:\s*([\s\S]*?)(?=\n## Motivo da Recomendação:|$)/i);
-            if (professionMatch && professionMatch[1]) {
-                professionHtml = professionMatch[1].trim().replace(/\n/g, '<br>');
-            }
-
-            // NOVO REGEX: Extrai o Motivo (texto que segue "## Motivo da Recomendação:" até o próximo título ou fim)
-            // Isso garante que o conteúdo seja injetado corretamente na sua caixa de "Motivo".
-            const reasonMatch = cleanText.match(/## Motivo da Recomendação:\s*([\s\S]*?)(?=\n## Profissão Recomendada:|$)/i);
-            if (reasonMatch && reasonMatch[1]) {
-                reasonHtml = reasonMatch[1].trim().replace(/\n/g, '<br>');
-            }
-            
-            // Título principal do resultado
-            const resultTitle = `<h2 class="text-4xl font-extrabold text-center text-indigo-800 mb-8">🎯 Seu Resultado Vocacional!</h2>`;
-
-            document.getElementById('content-area').innerHTML = `
-                ${resultTitle}
+                // Autenticação (usando o token ou de forma anônima)
+                if (initialAuthToken) {
+                    await signInWithCustomToken(auth, initialAuthToken);
+                    document.getElementById('auth-status').textContent = "Usuário autenticado e pronto para gerenciar.";
+                } else {
+                    await signInAnonymously(auth);
+                    document.getElementById('auth-status').textContent = "Usuário anônimo autenticado (pode gerenciar).";
+                }
                 
-                <div class="space-y-6">
-                    
-                    <!-- Bloco de Destaque da Profissão -->
-                    <div class="p-6 sm:p-8 bg-teal-50 rounded-2xl border-4 border-teal-300 shadow-lg">
-                        <p class="text-sm font-semibold text-teal-700 mb-1">PROFISSÃO RECOMENDADA</p>
-                        <div class="text-3xl sm:text-4xl font-extrabold text-indigo-700 leading-tight">${professionHtml}</div>
-                    </div>
+                userId = auth.currentUser?.uid || 'anonymous';
+                
+                // Iniciar listeners em tempo real
+                setupRealtimeListeners();
 
-                    <!-- Bloco de Detalhe do Motivo (Agora com extração garantida) -->
-                    <div class="p-6 sm:p-8 bg-gray-50 rounded-2xl border border-gray-200">
-                        <p class="text-lg font-semibold text-gray-700 mb-3">Motivo da Recomendação</p>
-                        <p class="text-gray-600 leading-relaxed">${reasonHtml}</p>
-                    </div>
+            } catch (error) {
+                console.error("Erro ao inicializar Firebase ou autenticar:", error);
+                document.getElementById('auth-status').textContent = `ERRO de Inicialização: ${error.message}`;
+            }
+        };
 
+        // 2. Setup de Listeners em Tempo Real
+        const setupRealtimeListeners = () => {
+            if (!db) return;
+
+            // Listener 1: Status Global (Cestas Distribuídas)
+            onSnapshot(getGlobalDataPath(), (doc) => {
+                const data = doc.data();
+                const totalBaskets = data?.totalBasketsDistributed || 0;
+                document.getElementById('total-baskets').textContent = totalBaskets.toLocaleString('pt-BR');
+                console.log("Cestas Distribuídas atualizadas:", totalBaskets);
+            }, (error) => {
+                console.error("Erro ao ouvir status global:", error);
+            });
+
+
+            // Listener 2: Lista de Itens de Estoque
+            onSnapshot(query(getInventoryCollectionPath()), (snapshot) => {
+                const inventoryListElement = document.getElementById('inventory-list');
+                inventoryListElement.innerHTML = ''; // Limpa a lista
+                
+                if (snapshot.empty) {
+                    inventoryListElement.innerHTML = '<p class="text-center text-gray-500 italic">Nenhum item cadastrado ainda. Use o formulário acima!</p>';
+                    return;
+                }
+
+                snapshot.docs.forEach((docSnapshot) => {
+                    const item = docSnapshot.data();
+                    const itemId = docSnapshot.id;
+                    renderItem(item, itemId, inventoryListElement);
+                });
+                console.log("Itens de Estoque atualizados.");
+            }, (error) => {
+                console.error("Erro ao ouvir inventário:", error);
+                inventoryListElement.innerHTML = '<p class="text-center text-red-500 font-bold">Erro ao carregar dados do estoque.</p>';
+            });
+        };
+
+        // 3. Renderizar Item Individual
+        const renderItem = (item, itemId, container) => {
+            const percentage = Math.min(100, (item.stock / item.goal) * 100);
+            const bgColor = percentage >= 100 ? 'bg-indigo-500' : 'bg-yellow-500';
+
+            const itemCard = document.createElement('div');
+            itemCard.className = 'bg-gray-50 p-4 rounded-lg border border-gray-200 flex flex-col md:flex-row items-start md:items-center justify-between shadow-sm';
+            
+            itemCard.innerHTML = `
+                <div class="flex-1 min-w-0 mb-3 md:mb-0">
+                    <p class="text-lg font-semibold text-gray-800 truncate">${item.name}</p>
+                    <p class="text-sm text-gray-500">${item.stock} unidades em estoque / Meta: ${item.goal} unidades</p>
+                    <div class="mt-2 h-3 w-full rounded-full progress-bar-container">
+                        <div class="progress-bar-fill h-full rounded-full ${bgColor}" style="width: ${percentage}%;"></div>
+                    </div>
+                    <p class="text-xs font-medium mt-1 text-gray-600">${percentage.toFixed(1)}% da meta alcançada</p>
                 </div>
-
-                <!-- Botão de Ação Final -->
-                <div class="mt-10 text-center">
-                    <button onclick="window.location.reload()" class="bg-teal-600 hover:bg-teal-700 text-white font-bold py-3 px-8 rounded-full transition duration-300 shadow-xl shadow-teal-200 text-lg">
-                        Fazer o Teste Novamente
+                <div class="flex space-x-2">
+                    <button data-id="${itemId}" class="update-stock-btn bg-blue-500 hover:bg-blue-600 text-white text-xs font-semibold py-2 px-3 rounded-lg shadow-md transition duration-150 ease-in-out flex items-center">
+                        + Estoque
+                    </button>
+                    <button data-id="${itemId}" class="delete-item-btn bg-red-500 hover:bg-red-600 text-white text-xs font-semibold py-2 px-3 rounded-lg shadow-md transition duration-150 ease-in-out flex items-center">
+                        Excluir
                     </button>
                 </div>
             `;
-        }
-        
-        // ===================================================================================
-        // INICIALIZAÇÃO FIRESTORE (BOILERPLATE OBRIGATÓRIO PARA O AMBIENTE CANVAS)
-        // ===================================================================================
-        
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, signInWithCustomToken, setPersistence, browserLocalPersistence } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-        
-        setLogLevel('Error'); // Reduz o log do Firestore para evitar poluição no console
+            container.appendChild(itemCard);
 
-        const canvasFirebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : null;
-        const canvasAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
-        
-        async function initFirebase() {
-            if (canvasFirebaseConfig) {
-                const app = initializeApp(canvasFirebaseConfig);
-                const auth = getAuth(app);
-                getFirestore(app); 
+            // Adiciona listeners aos novos botões (agora usando showPrompt e showConfirmation)
+            itemCard.querySelector('.update-stock-btn').addEventListener('click', (e) => {
+                showPrompt(
+                    'Atualizar Estoque',
+                    `Digite a nova quantidade total para ${item.name} (atual: ${item.stock}):`,
+                    item.stock,
+                    (newStock) => {
+                        if (newStock !== null && !isNaN(parseInt(newStock))) {
+                            updateItem(itemId, parseInt(newStock));
+                        }
+                    }
+                );
+            });
 
-                await setPersistence(auth, browserLocalPersistence);
+            itemCard.querySelector('.delete-item-btn').addEventListener('click', (e) => {
+                 showConfirmation(
+                    'Confirmar Exclusão',
+                    `Tem certeza que deseja excluir o item "${item.name}"?`,
+                    () => {
+                        deleteItem(itemId);
+                    }
+                 );
+            });
+        };
 
-                if (canvasAuthToken) {
-                    await signInWithCustomToken(auth, canvasAuthToken);
-                } else {
-                    await signInAnonymously(auth);
-                }
+        // 4. Salvar/Atualizar Item via Formulário
+        const handleItemSubmit = async (e) => {
+            e.preventDefault();
+            const name = document.getElementById('item-name').value.trim();
+            const stock = parseInt(document.getElementById('item-stock').value);
+            const goal = parseInt(document.getElementById('item-goal').value);
+
+            if (!name || isNaN(stock) || isNaN(goal) || goal < 1) {
+                showModal('Erro', 'Por favor, preencha todos os campos corretamente. A meta deve ser no mínimo 1.');
+                return;
             }
-        }
-        initFirebase(); 
-        // FIM DA INICIALIZAÇÃO FIRESTORE
+
+            try {
+                // Usa o nome como ID para que o mesmo item seja sempre atualizado
+                const itemId = name.toLowerCase().replace(/[^a-z0-9]+/g, '_');
+                const itemRef = doc(db, getInventoryCollectionPath().path, itemId);
+
+                await setDoc(itemRef, { name, stock, goal, userId }, { merge: true });
+                
+                document.getElementById('item-form').reset();
+                showModal('Sucesso', `Item "${name}" salvo/atualizado com sucesso!`);
+            } catch (error) {
+                console.error("Erro ao salvar/atualizar item:", error);
+                showModal('Erro de Dados', "Erro ao salvar o item. Verifique o console.");
+            }
+        };
+
+        // 5. Atualizar Apenas o Estoque
+        const updateItem = async (itemId, newStock) => {
+            try {
+                const itemRef = doc(db, getInventoryCollectionPath().path, itemId);
+                await updateDoc(itemRef, { stock: newStock });
+            } catch (error) {
+                console.error("Erro ao atualizar estoque:", error);
+                showModal('Erro de Dados', "Erro ao atualizar o estoque. Verifique o console.");
+            }
+        };
+
+        // 6. Excluir Item
+        const deleteItem = async (itemId) => {
+            try {
+                const itemRef = doc(db, getInventoryCollectionPath().path, itemId);
+                await deleteDoc(itemRef);
+            } catch (error) {
+                console.error("Erro ao excluir item:", error);
+                showModal('Erro de Dados', "Erro ao excluir o item. Verifique o console.");
+            }
+        };
+
+        // 7. Adicionar Cesta Distribuída
+        const handleAddBasket = async () => {
+            try {
+                const globalDataRef = getGlobalDataPath();
+                const docSnap = await getDoc(globalDataRef);
+                
+                let currentBaskets = 0;
+                if (docSnap.exists()) {
+                    currentBaskets = docSnap.data().totalBasketsDistributed || 0;
+                }
+
+                const newBaskets = currentBaskets + 1;
+
+                await setDoc(globalDataRef, { totalBasketsDistributed: newBaskets, userId }, { merge: true });
+            } catch (error) {
+                console.error("Erro ao adicionar cesta:", error);
+                showModal('Erro de Dados', "Erro ao registrar cesta. Verifique o console.");
+            }
+        };
+
+        // --- Event Listeners ---
+        document.getElementById('item-form').addEventListener('submit', handleItemSubmit);
+        document.getElementById('add-basket-btn').addEventListener('click', handleAddBasket);
+
+        // Inicia o aplicativo
+        window.onload = initFirebase;
     </script>
+
 </body>
 </html>
